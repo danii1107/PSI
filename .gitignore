@@ -220,3 +220,4 @@ local_settings.py
 db.sqlite3
 
 p1_env/
+auxrepo/
