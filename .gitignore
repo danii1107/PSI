@@ -219,5 +219,6 @@ local_settings.py
 .env
 db.sqlite3
 
+venv/
 p1_env/
 auxrepo/
