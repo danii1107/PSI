@@ -6,7 +6,6 @@ CMD = python3 manage.py
 # added to settings.py file
 APP = models 
 # update neon database
-export DATABASE_URL = postgres://qgdzyaxe:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@lucky.db.elephantsql.com/qgdzyaxe
 
 ## delete and create a new empty database
 #clear_db:

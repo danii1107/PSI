@@ -15,7 +15,7 @@ class Player(AbstractUser):
     def __str__(self):
         return self.username
 
-class ChessGame(models.Model):
+""" class ChessGame(models.Model):
     STATUS = (
     ('pending', 'pending'),
     ('active', 'active'),
@@ -66,4 +66,4 @@ class ChessMove(models.Model):
         chess_game.save()
 
         super().save(*args, **kwargs)
-
+ """
