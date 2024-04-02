@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'djoser',
     'mychess',
     'corsheaders',
+    'models.apps.ModelsConfig',
 ]
 
 REST_FRAMEWORK = {
