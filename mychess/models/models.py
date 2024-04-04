@@ -16,11 +16,15 @@ class Player(AbstractUser):
         return f"{self.username} ({self.rating})"
 
 class ChessGame(models.Model):
+    PENDING = 'pending'
+    ACTIVE = 'active'
+    FINISHED = 'finished'
+
     STATUS = (
-    ('pending', 'pending'),
-    ('active', 'active'),
-    ('finished', 'finished'),
-)
+        (PENDING, 'Pending'),
+        (ACTIVE, 'Active'),
+        (FINISHED, 'Finished'),
+    )
     DEFAULT_BOARD_STATE = chess.Board().fen()
 
 
@@ -62,8 +66,10 @@ class ChessMove(models.Model):
         from_square = chess.parse_square(self.move_from)
         to_square = chess.parse_square(self.move_to)
 
+
+
         if self.promotion:
-            move = chess.Move(from_square, to_square, promotion=self.promotion)
+            move = chess.Move.from_uci(self.move_from + self.move_to + self.promotion)
         else:
             move = chess.Move(from_square, to_square)
 
