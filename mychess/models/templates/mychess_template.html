@@ -20,7 +20,7 @@
 
 		const ws = new WebSocket(url);
 
-		chatSocket.onmessage = function(event) {
+		ws.onmessage = function(event) {
 			const data = JSON.parse(event.data);
 			chatLog.innerHTML += '<p>' + data.message + '<\p>';
 		};
