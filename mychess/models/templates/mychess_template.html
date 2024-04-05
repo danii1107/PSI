@@ -5,7 +5,7 @@
 </head>
 <body>
 	<h1>WebSocket</h1>
-	<input id="message-input" type="text">
+	<input id="message-input" type="text" autocomplete="off">
 	<button onclick="sendMessage()">Send</button>
 	<div id="chat-log"></div>
 
@@ -14,14 +14,14 @@
 		const chatLog = document.getElementById('chat-log');
 		const messageInput = document.getElementById('message-input');
 
-		const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+		const wsScheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 		const url = wsScheme + window.location.host + '/ws/mychess/' + roomName + '/';
 		console.log('url', url);
 
 		const ws = new WebSocket(url);
 
-		chatSocket.onmessage = function(e) {
-			const data = JSON.parse(e.data);
+		chatSocket.onmessage = function(event) {
+			const data = JSON.parse(event.data);
 			chatLog.innerHTML += '<p>' + data.message + '<\p>';
 		};
 		
