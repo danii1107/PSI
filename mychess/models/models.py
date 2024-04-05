@@ -66,18 +66,30 @@ class ChessMove(models.Model):
         from_square = chess.parse_square(self.move_from)
         to_square = chess.parse_square(self.move_to)
 
-
-
         if self.promotion:
             move = chess.Move.from_uci(self.move_from + self.move_to + self.promotion)
         else:
             move = chess.Move(from_square, to_square)
 
-
         if not board.is_legal(move):
             raise ValueError("Movimiento no válido.")
 
         board.push(move)
+
+        check = board.is_check()
+        checkmate = board.is_checkmate()
+        draw = board.is_stalemate() or board.is_insufficient_material() or board.is_fivefold_repetition() or board.can_claim_draw()
+
+        if checkmate:
+            chess_game.status = ChessGame.FINISHED
+            chess_game.winner = self.player
+            chess_game.end_time = models.DateTimeField(auto_now=True)
+        elif draw:
+            chess_game.status = ChessGame.FINISHED
+            chess_game.end_time = models.DateTimeField(auto_now=True)
+        elif check:
+            chess_game.status = ChessGame.ACTIVE
+
         chess_game.board_state = board.fen()
         chess_game.save()
 

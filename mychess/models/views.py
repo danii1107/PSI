@@ -3,4 +3,8 @@ from django.views.generic import View
 
 class ChessTemplateView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'mychess_template.html')
+		context = {
+			'gameID': kwargs.get('gameID'),
+			'token': kwargs.get('token')
+		}
+		return render(request, 'mychess_template.html', context)

@@ -5,30 +5,30 @@
 </head>
 <body>
 	<h1>WebSocket</h1>
-	<input id="message-input" type="text" autocomplete="off">
+	<input id="move" type="text" autocomplete="off">
 	<button onclick="sendMessage()">Send</button>
-	<div id="chat-log"></div>
+	<div id="moves-log"></div>
 
 	<script>
-		const roomName = 'mychess';
-		const chatLog = document.getElementById('chat-log');
-		const messageInput = document.getElementById('message-input');
+		console.log('gameid: ' + '{{ game_id }}');
+		console.log('token: ' + '{{ token }}');
+		const movesLog = document.getElementById('moves-log');
+		const move = document.getElementById('move');
 
 		const wsScheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-		const url = wsScheme + window.location.host + '/ws/mychess/' + roomName + '/';
-		console.log('url', url);
+		const url = wsScheme + window.location.host + '/ws/play/' + '{{ game_id }}' + '/' + '{{ token }}' + '/';
 
 		const ws = new WebSocket(url);
 
 		ws.onmessage = function(event) {
 			const data = JSON.parse(event.data);
-			chatLog.innerHTML += '<p>' + data.message + '<\p>';
+			movesLog.innerHTML += '<p>' + data.move + '<\p>';
 		};
 		
 		function sendMessage() {
-			const message = messageInput.value;
-			ws.send(JSON.stringify({message: message}));
-			messageInput.value = '';
+			const message = move.value;
+			ws.send(JSON.stringify({type: 'move', move: message}));
+			move.value = '';
 		}
 	</script>
 </body>
