@@ -2,6 +2,7 @@ import chess
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 class Player(AbstractUser):
     rating = models.IntegerField(default = -1)
@@ -83,10 +84,10 @@ class ChessMove(models.Model):
         if checkmate:
             chess_game.status = ChessGame.FINISHED
             chess_game.winner = self.player
-            chess_game.end_time = models.DateTimeField(auto_now=True)
+            chess_game.end_time = timezone.now()
         elif draw:
             chess_game.status = ChessGame.FINISHED
-            chess_game.end_time = models.DateTimeField(auto_now=True)
+            chess_game.end_time = timezone.now()
         elif check:
             chess_game.status = ChessGame.ACTIVE
 

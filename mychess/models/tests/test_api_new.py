@@ -40,6 +40,7 @@ class ChessGameViewSetTest(TestCase):
         self.assertEqual(response.data['status'], self.game.status)
 
     def test_create_pending_no_users(self):
+        ChessGame.objects.all().delete()
         game = ChessGame.objects.create(
             status=ChessGame.PENDING)
         game.save()
