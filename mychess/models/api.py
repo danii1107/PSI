@@ -23,7 +23,7 @@ class ChessGameViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, viewset
     def create(self, request, *args, **kwargs):
         try:
             pending_or_active_game = ChessGame.objects.get(
-                (Q(whitePlayer__isnull=True) | Q(blackPlayer__isnull=True)) & ~Q(status=ChessGame.ACTIVE),
+                (Q(whitePlayer__isnull=True) | Q(blackPlayer__isnull=True)) & ~Q(status=ChessGame.FINISHED),
                 status__in=[ChessGame.PENDING, ChessGame.ACTIVE]
             )
             if pending_or_active_game.status == ChessGame.ACTIVE:
