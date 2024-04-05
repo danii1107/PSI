@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from models.views import ChessTemplateView
 
 
 urlpatterns = [
@@ -24,5 +25,6 @@ urlpatterns = [
     path('api/v1/', include('djoser.urls')),
     path('api/v1/', include('djoser.urls.authtoken')),
     path('api/v1/', include('models.urls')),
+	path('mychess/', ChessTemplateView.as_view(), name='mychess_template'),
 	path('', RedirectView.as_view(url='/api/v1/', permanent=True)),
 ]

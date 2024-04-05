@@ -43,6 +43,8 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -97,6 +99,14 @@ TEMPLATES = [
 
 #WSGI_APPLICATION = 'mychess.wsgi.application'
 ASGI_APPLICATION = 'mychess.asgi.application'
+
+
+# Channels
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 
 # Database
