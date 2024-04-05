@@ -10,13 +10,11 @@
 	<div id="moves-log"></div>
 
 	<script>
-		console.log('gameid: ' + '{{ game_id }}');
-		console.log('token: ' + '{{ token }}');
 		const movesLog = document.getElementById('moves-log');
 		const move = document.getElementById('move');
 
 		const wsScheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-		const url = wsScheme + window.location.host + '/ws/play/' + '{{ game_id }}' + '/' + '{{ token }}' + '/';
+		const url = wsScheme + window.location.host + '/ws/play/' + '{{ gameID }}' + '/' + '{{ token }}' + '/';
 
 		const ws = new WebSocket(url);
 

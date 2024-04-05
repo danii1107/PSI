@@ -32,8 +32,6 @@ class ChessGameViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, viewset
             if pending_or_active_game.whitePlayer is None or pending_or_active_game.blackPlayer is None:
                 return self.update(request, game_id=pending_or_active_game.id, *args, **kwargs)
 
-            
-
         except ChessGame.DoesNotExist:
             data = {'whitePlayer': request.user.id} if random.choice([True, False]) else {'blackPlayer': request.user.id}
             serializer = self.get_serializer(data=data)
