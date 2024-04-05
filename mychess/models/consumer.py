@@ -90,15 +90,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 			raise ValueError("La partida no está activa.")
 
 		board = chess.Board(game.board_state)
-		from_square = chess.parse_square(movestr[:2])
-		to_square = chess.parse_square(movestr[2:4])
+		from_square = chess.parse_square(movestr[:1])
+		to_square = chess.parse_square(movestr[2:])
 
 		move = chess.Move(from_square, to_square)
 
 		if not board.is_legal(move):
 			raise ValueError("Movimiento no válido.")
 
-		await self.save_chess_move(game, player, movestr[:2], movestr[2:4], '')
+		await self.save_chess_move(game, player, movestr[:1], movestr[2:], '')
 
 		board.push(move)
 
