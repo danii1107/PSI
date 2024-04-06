@@ -1,35 +1,32 @@
 from django.test import TestCase
 from models.models import ChessGame, Player
 from models.serializers import ChessGameSerializer
-from rest_framework.test import APIClient
-from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 
-
-User = get_user_model()
 
 class ChessGameSerializerTest(TestCase):
-    def setUp(self):  
-        ChessGame.objects.all().delete()
-        self.client = APIClient()
-        self.user1 = User.objects.create_user(
-            username='user1', password='testpassword')
-        self.user2 = User.objects.create_user(
-            username='user2', password='testpassword')
-        self.player1 = Player.objects.create(username='player1', rating=1500)
-        self.player2 = Player.objects.create(username='player2', rating=1600)
+    def setUp(self):
+        self.player1 = Player.objects.create(username='player1', rating=1200)
+        self.player2 = Player.objects.create(username='player2', rating=1300)
         self.game = ChessGame.objects.create(
-            whitePlayer=self.player1,
-            blackPlayer=self.player2,
-            status='active',
-            board_state=ChessGame.DEFAULT_BOARD_STATE,
-            timeControl='10+5'
+            status=ChessGame.ACTIVE,
+            board_state='initial_state',
+            start_time=timezone.now(),
+            timeControl='10+0',
+            blackPlayer=self.player1,
+            whitePlayer=self.player2
         )
 
-        
-
-        
-
-    def test_serializer_with_valid_data(self):
+    def test_serialization(self):
         serializer = ChessGameSerializer(instance=self.game)
-        self.assertTrue(serializer.is_valid())
+        serialized_data = serializer.data
+
+        self.assertEqual(serialized_data['status'], self.game.status)
+        self.assertEqual(serialized_data['board_state'], self.game.board_state)
+        self.assertEqual(serialized_data['start_time'].replace('Z', ''), self.game.start_time.replace(tzinfo=None).isoformat())
+        self.assertEqual(serialized_data['timeControl'], self.game.timeControl)
+        self.assertEqual(serialized_data['blackPlayer'], self.game.blackPlayer.id)
+        self.assertEqual(serialized_data['whitePlayer'], self.game.whitePlayer.id)
+
+    
