@@ -36,7 +36,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 		
 		if message == 'move':
 			await self.handle_move(text_data_json)
-			await self.move_cb(text_data_json.get('move'))
 
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(
@@ -82,42 +81,51 @@ class GameConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps(event['message']))
 
 	async def handle_move(self, data):
-		movestr = data.get('move')
-		game = await self.get_game(self.gameID)
-		player = await self.get_user_from_token(self.scope['url_route']['kwargs']['token'])
+		try:
+			movestr = data.get('message')
+			game = await self.get_game(self.gameID)
+			player = await self.get_user_from_token(self.scope['url_route']['kwargs']['token'])
 
-		if game.status != 'active':
-			raise ValueError("La partida no está activa.")
+			if game.status != 'active':
+				raise ValueError("La partida no está activa.")
 
-		board = chess.Board(game.board_state)
-		from_square = chess.parse_square(movestr[:1])
-		to_square = chess.parse_square(movestr[2:])
+			board = chess.Board(game.board_state)
+			from_square_index = chess.parse_square(movestr[0] + movestr[1])
+			to_square_index = chess.parse_square(movestr[2] + movestr[3])
 
-		move = chess.Move(from_square, to_square)
+			move = chess.Move(from_square_index, to_square_index)
 
-		if not board.is_legal(move):
-			raise ValueError("Movimiento no válido.")
+			print('From:', from_square_index)
+			print('To:', to_square_index)
+			print('Move:', move)
 
-		await self.save_chess_move(game, player, movestr[:1], movestr[2:], '')
+			if not board.is_legal(move):
+				raise ValueError("Movimiento ilegal.")
 
-		board.push(move)
+			await self.save_chess_move(game, player, movestr[:1], movestr[2:], '')
 
-		checkmate = board.is_checkmate()
-		draw = board.is_stalemate() or board.is_insufficient_material() or board.is_fivefold_repetition() or board.can_claim_draw()
+			board.push(move)
 
-		if checkmate or draw:
-			game.status = ChessGame.FINISHED
-			if checkmate:
-				game.winner = player
-			await self.update_game_status(game, board.fen())
+			checkmate = board.is_checkmate()
+			draw = board.is_stalemate() or board.is_insufficient_material() or board.is_fivefold_repetition() or board.can_claim_draw()
 
-		await self.channel_layer.group_send(
-			self.room_group_name,
-			{
-				'type': 'chat_message',
-				'message': movestr,
-			}
-		)
+			if checkmate or draw:
+				game.status = ChessGame.FINISHED
+				if checkmate:
+					game.winner = player
+				await self.update_game_status(game, board.fen())
+
+			await self.channel_layer.group_send(
+				self.room_group_name,
+				{
+					'type': 'chat_message',
+					'message': movestr,
+				}
+			)
+			await self.move_cb(data.get('message'), from_square_index, to_square_index, player.id)
+		except ValueError as e:
+			print(e)
+			await self.move_cb(data.get('message'), from_square_index, to_square_index, player.id, error=True)
 
 	@database_sync_to_async
 	def get_game(self, game_id):
