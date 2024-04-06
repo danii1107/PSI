@@ -44,35 +44,41 @@ class GameConsumer(AsyncWebsocketConsumer):
 		)
 
 	async def game_cb(self, message, status, player_id, error=False):
-		msg_type = 'error' if error else 'game'
-		await self.channel_layer.group_send(
-			self.room_group_name,
-			{
-				'type': 'game.message',
-				'message': {
-					'type': msg_type,
-					'message': message,
-					'status': status,
-					'player_id': player_id,
+		try:
+			msg_type = 'error' if error else 'game'
+			await self.channel_layer.group_send(
+				self.room_group_name,
+				{
+					'type': 'game.message',
+					'message': {
+						'type': msg_type,
+						'message': message,
+						'status': status,
+						'player_id': player_id,
+					}
 				}
-			}
-		)
+			)
+		except Exception as e:
+			print(e)
 
 	async def move_cb(self, from_square, to_square, player_id, promotion='', error=False):
 		msg_type = 'error' if error else 'move'
-		await self.channel_layer.group_send(
-			self.room_group_name,
-			{
-				'type': 'move.message',
-				'message': {
-					'type': msg_type,
-					'from': from_square,
-					'to': to_square,
-					'playerID': player_id,
-					'promotion': promotion,
+		try:
+			await self.channel_layer.group_send(
+				self.room_group_name,
+				{
+					'type': 'move.message',
+					'message': {
+						'type': msg_type,
+						'from': from_square,
+						'to': to_square,
+						'playerID': player_id,
+						'promotion': promotion,
+					}
 				}
-			}
-		)
+			)
+		except Exception as e:
+			print(e)
 
 	async def game_message(self, event):
 		await self.send(text_data=json.dumps(event['message']))
@@ -102,7 +108,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if not board.is_legal(move):
 				raise ValueError("Movimiento ilegal.")
 
-			await self.save_chess_move(game, player, movestr[:1], movestr[2:], '')
+			await self.save_chess_move(game, player, movestr[0] + movestr[1], movestr[2] + movestr[3], '')
 
 			board.push(move)
 
@@ -158,3 +164,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 			return token.user
 		except Token.DoesNotExist:
 			return None
+		
+	async def chat_message(self, event):
+		message = event['message']
+
+		await self.send(text_data=json.dumps({
+			'type': 'chat_message',
+			'message': message
+		}))
