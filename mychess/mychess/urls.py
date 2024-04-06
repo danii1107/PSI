@@ -25,6 +25,6 @@ urlpatterns = [
     path('api/v1/', include('djoser.urls')),
     path('api/v1/', include('djoser.urls.authtoken')),
     path('api/v1/', include('models.urls')),
-	path('play/<str:gameID>/<str:token>/', ChessTemplateView.as_view(), name='mychess_template'),
+	path('play/<int:gameID>/', ChessTemplateView.as_view(), name='mychess_template'),
 	path('', RedirectView.as_view(url='/api/v1/', permanent=True)),
 ]

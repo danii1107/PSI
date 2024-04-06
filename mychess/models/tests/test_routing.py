@@ -2,7 +2,7 @@ import asyncio
 from django.test import TestCase
 from channels.testing import WebsocketCommunicator
 from models.routing import websocket_urlpatterns
-from models.consumer import GameConsumer
+from mychess.models.consumers import GameConsumer
 
 class GameConsumerTestCase(TestCase):
     async def test_game_consumer(self):

@@ -2,33 +2,45 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from rest_framework.authtoken.models import Token
 from .models import ChessGame, ChessMove
-from django.db import models
 import json
 import chess
+from urllib.parse import parse_qs
 
-class GameConsumer(AsyncWebsocketConsumer):
+class ChessConsumer(AsyncWebsocketConsumer):
+	room_group_name = str(12345) 
+
 	async def connect(self):
 		self.gameID = self.scope['url_route']['kwargs']['gameID']
-		token_key = self.scope['url_route']['kwargs']['token']
+		
+		token_key = 0
+		for header in self.scope['headers']:
+			if header[0].decode('utf-8').lower() == 'authorization':
+				token_key = header[1].decode('utf-8')
+				break
+		
+		if token_key is not None:
+			user = await self.get_user_from_token(token_key)
+		if not user:
+			await self.game_cb("Invalid token. Connection not authorized.", '', 0, error=True)
+			await self.close()
+			return
 
-		user = await self.get_user_from_token(token_key)
 		game = await self.get_game(self.gameID)
+		if not game:
+			await self.game_cb(f"Invalid game with id {self.gameID}", '', user.id, error=True)
+			await self.close()
+			return
+		
 		if user and game:
-			self.room_group_name = self.gameID
-
+			self.room_group_name = str(self.gameID)
 			await self.channel_layer.group_add(
 				self.room_group_name,
 				self.channel_name
 			)
-
 			await self.accept()
+			await self.game_cb('OK', game.status, user.id)
 			await self.update_active(game)
-			await self.game_cb('Bienvenido a la partida.', 'active', user.id)
-		else:
-			await self.send(text_data=json.dumps({
-				'error': 'Invalid token. Connection closed.'
-			}))
-			await self.close()
+
 
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
@@ -49,7 +61,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			await self.channel_layer.group_send(
 				self.room_group_name,
 				{
-					'type': 'game.message',
+					'type': 'game',
 					'message': {
 						'type': msg_type,
 						'message': message,
@@ -67,7 +79,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			await self.channel_layer.group_send(
 				self.room_group_name,
 				{
-					'type': 'move.message',
+					'type': 'move',
 					'message': {
 						'type': msg_type,
 						'from': from_square,
@@ -90,7 +102,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 		try:
 			movestr = data.get('message')
 			game = await self.get_game(self.gameID)
-			player = await self.get_user_from_token(self.scope['url_route']['kwargs']['token'])
+			token_key = None
+			for header in self.scope['headers']:
+				if header[0].decode('utf-8').lower() == 'authorization':
+					token_key = header[1].decode('utf-8')
+					break
+			player = await self.get_user_from_token(token_key)
 
 			if game.status != 'active':
 				raise ValueError("La partida no está activa.")
@@ -100,10 +117,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			to_square_index = chess.parse_square(movestr[2] + movestr[3])
 
 			move = chess.Move(from_square_index, to_square_index)
-
-			print('From:', from_square_index)
-			print('To:', to_square_index)
-			print('Move:', move)
 
 			if not board.is_legal(move):
 				raise ValueError("Movimiento ilegal.")
@@ -165,10 +178,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 		except Token.DoesNotExist:
 			return None
 		
-	async def chat_message(self, event):
+	async def game(self, event):
 		message = event['message']
+		await self.send(text_data=json.dumps(message))
 
-		await self.send(text_data=json.dumps({
-			'type': 'chat_message',
-			'message': message
-		}))
+	async def move(self, event):
+		message = event['message']
+		await self.send(text_data=json.dumps(message))
