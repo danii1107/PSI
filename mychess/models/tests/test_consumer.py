@@ -173,7 +173,6 @@ class ChessConsumerTests(ChannelsLiveServerTestCase):
         "send invalid move to the websocket and check"
         " that it is received and rejected"
         self.gameID = self.game2.id  # Valid game ID
-
         response, communicator = await self.connect_and_verify(
             self.gameID,
             self.white_token_key)

@@ -6,40 +6,46 @@ import json
 import chess
 
 class ChessConsumer(AsyncWebsocketConsumer):
-	room_group_name = str(1) 
+	room_group_name = str(0) 
 
 	async def connect(self):
+		await self.accept()
 		self.gameID = self.scope['url_route']['kwargs']['gameID']
-		
-		authorizing_user = None
-		token_key = 0
-		for header in self.scope['headers']:
-			if header[0].decode('utf-8').lower() == 'authorization':
-				authorizing_user = header[1].decode('utf-8')
-				token_key = authorizing_user.split(' ')[1]
-				break
-		
+		token_key = self.scope['query_string'].decode('utf-8')
+
 		user = await self.get_user_from_token(token_key)
-		# check token
-		if 1 == 0:
-			await self.game_cb("Invalid token. Connection not authorized.", '', '', error=True)
+		if user is None:
+			await self.send(text_data=json.dumps({
+				'type': 'error',
+				'message': 'Invalid token. Connection not authorized.'
+			}))
 			await self.close()
 			return
-
+		
 		game = await self.get_game(self.gameID)
-		if not game:
-			await self.game_cb(f"Invalid game with id {self.gameID}", '', user.id, error=True)
+		if game is None:
+			await self.send(text_data=json.dumps({
+				'type': 'error',
+				'message': f"Invalid game with id {self.gameID}"
+			}))
 			await self.close()
-			return 
+			return
+		
+		cond = await self.verify_game(self.gameID, token_key)
+		if cond is True:
+			await self.send(text_data=json.dumps({
+				'type': 'error',
+				'message': f"Invalid game with id {self.gameID}"
+			}))
+			await self.close()
+			return
 		
 		self.room_group_name = str(self.gameID)
 		await self.channel_layer.group_add(
 			self.room_group_name,
 			self.channel_name
 		)
-		await self.accept()
-		await self.game_cb('OK', '', '')
-		await self.update_active(game)
+		await self.game_cb('OK', game.status, user.id, False)
 		return
 
 
@@ -55,32 +61,30 @@ class ChessConsumer(AsyncWebsocketConsumer):
 			self.room_group_name,
 			self.channel_name
 		)
+		await super().disconnect(close_code)
 
-	async def game_cb(self, message, status, player_id, error=False):
-		try:
-			msg_type = 'error' if error else 'game'
-			await self.channel_layer.group_send(
-				self.room_group_name,
-				{
-					'type': 'game',
-					'message': {
-						'type': msg_type,
-						'message': message,
-						'status': status,
-						'player_id': player_id,
-					}
+	async def game_cb(self, message, status, player_id, error):
+		msg_type = 'error' if error else 'game'
+		await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				'type': 'game.message',
+				'message': {
+					'type': msg_type,
+					'message': message,
+					'status': status,
+					'player_id': player_id,
 				}
-			)
-		except Exception as e:
-			print(e)
+			}
+		)
 
-	async def move_cb(self, move, from_square, to_square, player_id, promotion='', error=False):
+	async def move_cb(self, from_square, to_square, player_id, promotion='', error=False):
 		msg_type = 'error' if error else 'move'
 		try:
 			await self.channel_layer.group_send(
 				self.room_group_name,
 				{
-					'type': 'move',
+					'type': 'move.message',
 					'message': {
 						'type': msg_type,
 						'from': from_square,
@@ -91,40 +95,41 @@ class ChessConsumer(AsyncWebsocketConsumer):
 				}
 			)
 		except Exception as e:
-			print(e)
-
-	async def game_message(self, event):
-		await self.send(text_data=json.dumps(event['message']))
-
-	async def move_message(self, event):
-		await self.send(text_data=json.dumps(event['message']))
+			pass
 
 	async def handle_move(self, data):
 		try:
-			movestr = data.get('message')
+			from_sq = data.get('from')
+			to_sq = data.get('to')
+			promotion = data.get('promotion')
 			game = await self.get_game(self.gameID)
-			authorizing_user = None
-			token_key = 0
-			for header in self.scope['headers']:
-				if header[0].decode('utf-8').lower() == 'authorization':
-					authorizing_user = header[1].decode('utf-8')
-					token_key = authorizing_user.split(' ')[1]
-					break
+			token_key = self.scope['query_string'].decode('utf-8')
 			player = await self.get_user_from_token(token_key)
 
 			if game.status != 'active':
-				raise ValueError("La partida no está activa.")
+				await self.send(text_data=json.dumps({
+					'type': 'error',
+					'message': "Error: invalid move (game is not active)"
+				}))
+				return
 
 			board = chess.Board(game.board_state)
-			from_square_index = chess.parse_square(movestr[0] + movestr[1])
-			to_square_index = chess.parse_square(movestr[2] + movestr[3])
+			from_square_index = chess.parse_square(from_sq)
+			to_square_index = chess.parse_square(to_sq)
 
-			move = chess.Move(from_square_index, to_square_index)
+			if promotion:
+				move = chess.Move.from_uci(from_sq + to_sq + promotion)
+			else:
+				move = chess.Move(from_square_index, to_square_index)
 
 			if not board.is_legal(move):
-				raise ValueError("Movimiento ilegal.")
+				await self.send(text_data=json.dumps({
+					'type': 'error',
+					'message': f"Error: invalid move {from_sq}{to_sq}"
+				}))
+				return
 
-			await self.save_chess_move(game, player, movestr[0] + movestr[1], movestr[2] + movestr[3], '')
+			await self.save_chess_move(game, player, from_sq, to_sq, promotion)
 
 			board.push(move)
 
@@ -137,14 +142,17 @@ class ChessConsumer(AsyncWebsocketConsumer):
 					game.winner = player
 				await self.update_game_status(game, board.fen())
 
-			await self.move_cb(movestr, from_square_index, to_square_index, player.id)
+			await self.move_cb(from_sq, to_sq, player.id, promotion=promotion)
 		except ValueError as e:
-			print(e)
-			await self.move_cb(movestr, from_square_index, to_square_index, player.id, error=True)
+			await self.move_cb(from_sq, to_sq, player.id, promotion=promotion, error=True)
 
 	@database_sync_to_async
 	def get_game(self, game_id):
-		return ChessGame.objects.get(id=game_id)
+		try:
+			game = ChessGame.objects.get(id=game_id)
+			return game
+		except ChessGame.DoesNotExist:
+			return None
 
 	@database_sync_to_async
 	def save_chess_move(self, game, player, move_from, move_to, promotion):
@@ -173,11 +181,23 @@ class ChessConsumer(AsyncWebsocketConsumer):
 			return token.user
 		except Token.DoesNotExist:
 			return None
+
+	@database_sync_to_async
+	def verify_game(self, gameID, token_key):
+		game = ChessGame.objects.get(id=gameID)
+		user = Token.objects.get(key=token_key).user
+		if game.whitePlayer is not None:
+			if game.whitePlayer.id == user.id:
+				return False
+		if game.blackPlayer is not None:
+			if game.blackPlayer.id == user.id:
+				return False
+		return True
 		
-	async def game(self, event):
+	async def game_message(self, event):
 		message = event['message']
 		await self.send(text_data=json.dumps(message))
 
-	async def move(self, event):
+	async def move_message(self, event):
 		message = event['message']
 		await self.send(text_data=json.dumps(message))
