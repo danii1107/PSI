@@ -14,13 +14,17 @@
 		const move = document.getElementById('message');
 
 		const wsScheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-		const url = wsScheme + window.location.host + '/ws/play/' + '{{ gameID }}' + '/?' + '{{ token_key }}';
+		const url = wsScheme + window.location.host + '/ws/play/' + '{{ gameID }}' + '/?' + '{{ token_key }}' + '/';
 
 		const ws = new WebSocket(url);
 
 		ws.onmessage = function(event) {
 			const data = JSON.parse(event.data);
-			if (data && data.message) {
+			if (data.type === 'move') {
+				movesLog.innerHTML += '<p>' + data.from + data.to + '</p>';
+			} else if (data.type === 'error') {
+				movesLog.innerHTML += '<p>' + data.message + '</p>';
+			} else if (data.type === 'game') {
 				movesLog.innerHTML += '<p>' + data.message + '</p>';
 			}
 		};

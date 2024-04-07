@@ -4,7 +4,6 @@ from rest_framework.authtoken.models import Token
 from .models import ChessGame, ChessMove
 import json
 import chess
-from urllib.parse import parse_qs
 
 class ChessConsumer(AsyncWebsocketConsumer):
 	room_group_name = str(12345) 
@@ -12,10 +11,12 @@ class ChessConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.gameID = self.scope['url_route']['kwargs']['gameID']
 		
+		authorizing_user = None
 		token_key = 0
 		for header in self.scope['headers']:
 			if header[0].decode('utf-8').lower() == 'authorization':
-				token_key = header[1].decode('utf-8')
+				authorizing_user = header[1].decode('utf-8')
+				token_key = authorizing_user.split(' ')[1]
 				break
 		
 		if token_key is not None:
@@ -73,7 +74,7 @@ class ChessConsumer(AsyncWebsocketConsumer):
 		except Exception as e:
 			print(e)
 
-	async def move_cb(self, from_square, to_square, player_id, promotion='', error=False):
+	async def move_cb(self, move, from_square, to_square, player_id, promotion='', error=False):
 		msg_type = 'error' if error else 'move'
 		try:
 			await self.channel_layer.group_send(
@@ -102,10 +103,12 @@ class ChessConsumer(AsyncWebsocketConsumer):
 		try:
 			movestr = data.get('message')
 			game = await self.get_game(self.gameID)
-			token_key = None
+			authorizing_user = None
+			token_key = 0
 			for header in self.scope['headers']:
 				if header[0].decode('utf-8').lower() == 'authorization':
-					token_key = header[1].decode('utf-8')
+					authorizing_user = header[1].decode('utf-8')
+					token_key = authorizing_user.split(' ')[1]
 					break
 			player = await self.get_user_from_token(token_key)
 
@@ -134,17 +137,10 @@ class ChessConsumer(AsyncWebsocketConsumer):
 					game.winner = player
 				await self.update_game_status(game, board.fen())
 
-			await self.channel_layer.group_send(
-				self.room_group_name,
-				{
-					'type': 'chat_message',
-					'message': movestr,
-				}
-			)
-			await self.move_cb(data.get('message'), from_square_index, to_square_index, player.id)
+			await self.move_cb(movestr, from_square_index, to_square_index, player.id)
 		except ValueError as e:
 			print(e)
-			await self.move_cb(data.get('message'), from_square_index, to_square_index, player.id, error=True)
+			await self.move_cb(movestr, from_square_index, to_square_index, player.id, error=True)
 
 	@database_sync_to_async
 	def get_game(self, game_id):
