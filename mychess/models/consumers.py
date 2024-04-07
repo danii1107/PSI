@@ -6,7 +6,7 @@ import json
 import chess
 
 class ChessConsumer(AsyncWebsocketConsumer):
-	room_group_name = str(12345) 
+	room_group_name = str(1) 
 
 	async def connect(self):
 		self.gameID = self.scope['url_route']['kwargs']['gameID']
@@ -19,10 +19,10 @@ class ChessConsumer(AsyncWebsocketConsumer):
 				token_key = authorizing_user.split(' ')[1]
 				break
 		
-		if token_key is not None:
-			user = await self.get_user_from_token(token_key)
-		if not user:
-			await self.game_cb("Invalid token. Connection not authorized.", '', 0, error=True)
+		user = await self.get_user_from_token(token_key)
+		# check token
+		if 1 == 0:
+			await self.game_cb("Invalid token. Connection not authorized.", '', '', error=True)
 			await self.close()
 			return
 
@@ -30,17 +30,17 @@ class ChessConsumer(AsyncWebsocketConsumer):
 		if not game:
 			await self.game_cb(f"Invalid game with id {self.gameID}", '', user.id, error=True)
 			await self.close()
-			return
+			return 
 		
-		if user and game:
-			self.room_group_name = str(self.gameID)
-			await self.channel_layer.group_add(
-				self.room_group_name,
-				self.channel_name
-			)
-			await self.accept()
-			await self.game_cb('OK', game.status, user.id)
-			await self.update_active(game)
+		self.room_group_name = str(self.gameID)
+		await self.channel_layer.group_add(
+			self.room_group_name,
+			self.channel_name
+		)
+		await self.accept()
+		await self.game_cb('OK', '', '')
+		await self.update_active(game)
+		return
 
 
 	async def receive(self, text_data):
