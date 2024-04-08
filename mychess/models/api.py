@@ -7,6 +7,7 @@ import random
 from .models import ChessGame
 from .serializers import ChessGameSerializer
 
+
 class MyTokenCreateView(TokenCreateView):
     def _action(self, serializer):
         response = super()._action(serializer)
@@ -16,43 +17,67 @@ class MyTokenCreateView(TokenCreateView):
         response.data['rating'] = token_object.user.rating
         return response
 
-class ChessGameViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+
+class ChessGameViewSet(
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = ChessGame.objects.all()
     serializer_class = ChessGameSerializer
-    
+
     def create(self, request, *args, **kwargs):
         try:
             pending_or_active_game = ChessGame.objects.get(
-                (Q(whitePlayer__isnull=True) | Q(blackPlayer__isnull=True)) & ~Q(status=ChessGame.FINISHED),
+                (Q(whitePlayer__isnull=True) | Q(blackPlayer__isnull=True)) &
+                ~Q(status=ChessGame.FINISHED),
                 status__in=[ChessGame.PENDING, ChessGame.ACTIVE]
             )
-            if pending_or_active_game.status == ChessGame.ACTIVE or (pending_or_active_game.status == ChessGame.PENDING and pending_or_active_game.blackPlayer is None and pending_or_active_game.whitePlayer is None):
-                return Response({"detail": "Cannot join an active game."}, status=status.HTTP_400_BAD_REQUEST)
+            if pending_or_active_game.status == ChessGame.ACTIVE or (
+                pending_or_active_game.status == ChessGame.PENDING and
+                pending_or_active_game.blackPlayer is None and
+                pending_or_active_game.whitePlayer is None
+            ):
+                return Response(
+                    {"detail": "Cannot join an active game."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            if pending_or_active_game.whitePlayer is None or pending_or_active_game.blackPlayer is None:
-                return self.update(request, game_id=pending_or_active_game.id, *args, **kwargs)
+            if (pending_or_active_game.whitePlayer is None or
+                    pending_or_active_game.blackPlayer is None):
+                return self.update(
+                    request, game_id=pending_or_active_game.id, *args, **kwargs
+                )
 
         except ChessGame.DoesNotExist:
-            data = {'whitePlayer': request.user.id} if random.choice([True, False]) else {'blackPlayer': request.user.id}
+            if random.choice([True, False]):
+                data = {'whitePlayer': request.user.id}
+            else:
+                data = {'blackPlayer': request.user.id}
             serializer = self.get_serializer(data=data)
             if serializer.is_valid(raise_exception=True):
                 self.perform_create(serializer)
                 headers = self.get_success_headers(serializer.data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+                return Response(serializer.data,
+                                status=status.HTTP_201_CREATED,
+                                headers=headers)
 
     def update(self, request, *args, **kwargs):
         game_id = kwargs.get('game_id')
         pending_or_active_game = ChessGame.objects.get(id=game_id)
-        
-        if pending_or_active_game.whitePlayer and pending_or_active_game.whitePlayer != request.user:
+
+        if (pending_or_active_game.whitePlayer and
+                pending_or_active_game.whitePlayer != request.user):
             pending_or_active_game.blackPlayer = request.user
-        elif pending_or_active_game.blackPlayer and pending_or_active_game.blackPlayer != request.user:
+        elif (pending_or_active_game.blackPlayer and
+              pending_or_active_game.blackPlayer != request.user):
+
             pending_or_active_game.whitePlayer = request.user
 
         pending_or_active_game.save()
         serializer = self.get_serializer(pending_or_active_game)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -62,4 +87,3 @@ class ChessGameViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, viewset
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-
