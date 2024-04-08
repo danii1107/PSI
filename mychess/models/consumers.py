@@ -46,7 +46,7 @@ class ChessConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-        await self.game_cb('OK', game.status, user.id, False)
+        await self.game_cb('OK', game.status, user.id)
         return
 
     async def receive(self, text_data):
@@ -63,7 +63,7 @@ class ChessConsumer(AsyncWebsocketConsumer):
         )
         await super().disconnect(close_code)
 
-    async def game_cb(self, message, status, player_id, error):
+    async def game_cb(self, message, status, player_id, error=False):
         msg_type = 'error' if error else 'game'
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -81,22 +81,19 @@ class ChessConsumer(AsyncWebsocketConsumer):
     async def move_cb(self, from_square, to_square, player_id,
                       promotion='', error=False):
         msg_type = 'error' if error else 'move'
-        try:
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'move.message',
-                    'message': {
-                        'type': msg_type,
-                        'from': from_square,
-                        'to': to_square,
-                        'playerID': player_id,
-                        'promotion': promotion,
-                    }
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'move.message',
+                'message': {
+                    'type': msg_type,
+                    'from': from_square,
+                    'to': to_square,
+                    'playerID': player_id,
+                    'promotion': promotion,
                 }
-            )
-        except Exception:
-            pass
+            }
+        )
 
     async def handle_move(self, data):
         try:
@@ -141,15 +138,15 @@ class ChessConsumer(AsyncWebsocketConsumer):
                     board.can_claim_draw())
 
             if checkmate or draw:
-                game.status = ChessGame.FINISHED
-                if checkmate:
-                    game.winner = player
+                await self.update_finished(game, checkmate, player)
                 await self.update_game_status(game, board.fen())
 
             await self.move_cb(from_sq, to_sq, player.id, promotion=promotion)
-        except ValueError:
-            await self.move_cb(from_sq, to_sq, player.id,
-                               promotion=promotion, error=True)
+        except ValueError as e:
+            await self.send(text_data=json.dumps({
+                    'type': 'error',
+                    'message': e
+                }))
 
     @database_sync_to_async
     def get_game(self, game_id):
@@ -177,6 +174,13 @@ class ChessConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def update_active(self, game):
         game.status = ChessGame.ACTIVE
+        game.save()
+
+    @database_sync_to_async
+    def update_finished(self, game, checkmate, player):
+        game.status = ChessGame.FINISHED
+        if checkmate:
+            game.winner = player
         game.save()
 
     @database_sync_to_async
