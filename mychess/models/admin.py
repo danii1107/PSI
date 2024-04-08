@@ -1,3 +1,8 @@
+"""
+Modulo que registra los modelos en el administrador de Django
+@autor: Enrique Gómez Fernández
+"""
+
 from django.contrib import admin
 from .models import Player, ChessGame, ChessMove
 
