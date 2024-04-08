@@ -201,4 +201,6 @@ DJOSER = {
     "USER_ID_FIELD": "username"
 }
 
+CSRF_TRUSTED_ORIGINS = ['https://mychess-dbmi.onrender.com']
+
 # CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
