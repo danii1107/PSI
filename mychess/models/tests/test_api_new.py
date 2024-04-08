@@ -23,6 +23,43 @@ class ChessGameViewSetTest(TestCase):
         self.user2 = User.objects.create_user(
             username='user2', password='testpassword')
 
+    def test_create_game_random(self):
+        """Create a new game """
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(URL, {})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ChessGame.objects.count(), 1)
+        chessgame = ChessGame.objects.first()
+        result = (chessgame.whitePlayer == self.user1) or (
+            chessgame.blackPlayer == self.user1) 
+        self.assertTrue(result)
+        if (chessgame.whitePlayer == self.user1):
+            while(1):
+                ChessGame.objects.all().delete()
+                self.client.force_authenticate(user=self.user1)
+                response = self.client.post(URL, {})
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                self.assertEqual(ChessGame.objects.count(), 1)
+                chessgame = ChessGame.objects.first()
+                if (chessgame.blackPlayer == self.user1):
+                    result = (chessgame.blackPlayer == self.user1)
+                    self.assertTrue(result)
+                    break
+        else:
+            while(1):
+                ChessGame.objects.all().delete()
+                self.client.force_authenticate(user=self.user1)
+                response = self.client.post(URL, {})
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                self.assertEqual(ChessGame.objects.count(), 1)
+                chessgame = ChessGame.objects.first()
+                if (chessgame.whitePlayer == self.user1):
+                    result = (chessgame.whitePlayer == self.user1)
+                    self.assertTrue(result)
+                    break
+
+
+
     def test_list(self):
         self.client.force_authenticate(user=self.user1)
         response = self.client.get('/api/v1/games/')
