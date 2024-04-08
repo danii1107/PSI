@@ -1,6 +1,6 @@
 # test draw for insuficient material
 import asyncio
-from consumer_main import _main, _init
+from mychess.models.tests.Consumer_scripts.consumer_main import _main, _init
 
 
 # board with king's pawn in e4 and black king's pawn in e5

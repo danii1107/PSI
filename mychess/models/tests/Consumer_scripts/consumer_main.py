@@ -13,6 +13,7 @@ application = URLRouter([
     path("ws/play/<int:gameID>/", ChessConsumer.as_asgi()),
 ])
 
+
 def _init(consumerFirst=True):
     print("cleaning data base")
     print(ChessGame.objects.count())
