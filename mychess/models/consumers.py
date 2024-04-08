@@ -96,57 +96,51 @@ class ChessConsumer(AsyncWebsocketConsumer):
         )
 
     async def handle_move(self, data):
-        try:
-            from_sq = data.get('from')
-            to_sq = data.get('to')
-            promotion = data.get('promotion')
-            game = await self.get_game(self.gameID)
-            token_key = self.scope['query_string'].decode('utf-8')
-            player = await self.get_user_from_token(token_key)
+        from_sq = data.get('from')
+        to_sq = data.get('to')
+        promotion = data.get('promotion')
+        game = await self.get_game(self.gameID)
+        token_key = self.scope['query_string'].decode('utf-8')
+        player = await self.get_user_from_token(token_key)
 
-            if game.status != 'active':
-                await self.send(text_data=json.dumps({
-                    'type': 'error',
-                    'message': "Error: invalid move (game is not active)"
-                }))
-                return
-
-            board = chess.Board(game.board_state)
-            from_square_index = chess.parse_square(from_sq)
-            to_square_index = chess.parse_square(to_sq)
-
-            if promotion:
-                move = chess.Move.from_uci(from_sq + to_sq + promotion)
-            else:
-                move = chess.Move(from_square_index, to_square_index)
-
-            if not board.is_legal(move):
-                await self.send(text_data=json.dumps({
-                    'type': 'error',
-                    'message': f"Error: invalid move {from_sq}{to_sq}"
-                }))
-                return
-
-            await self.save_chess_move(game, player, from_sq, to_sq, promotion)
-
-            board.push(move)
-
-            checkmate = board.is_checkmate()
-            draw = (board.is_stalemate() or
-                    board.is_insufficient_material() or
-                    board.is_fivefold_repetition() or
-                    board.can_claim_draw())
-
-            if checkmate or draw:
-                await self.update_finished(game, checkmate, player)
-                await self.update_game_status(game, board.fen())
-
-            await self.move_cb(from_sq, to_sq, player.id, promotion=promotion)
-        except ValueError as e:
+        if game.status != 'active':
             await self.send(text_data=json.dumps({
-                    'type': 'error',
-                    'message': e
-                }))
+                'type': 'error',
+                'message': "Error: invalid move (game is not active)"
+            }))
+            return
+
+        board = chess.Board(game.board_state)
+        from_square_index = chess.parse_square(from_sq)
+        to_square_index = chess.parse_square(to_sq)
+
+        if promotion:
+            move = chess.Move.from_uci(from_sq + to_sq + promotion)
+        else:
+            move = chess.Move(from_square_index, to_square_index)
+
+        if not board.is_legal(move):
+            await self.send(text_data=json.dumps({
+                'type': 'error',
+                'message': f"Error: invalid move {from_sq}{to_sq}"
+            }))
+            return
+
+        await self.save_chess_move(game, player, from_sq, to_sq, promotion)
+
+        board.push(move)
+
+        checkmate = board.is_checkmate()
+        draw = (board.is_stalemate() or
+                board.is_insufficient_material() or
+                board.is_fivefold_repetition() or
+                board.can_claim_draw())
+
+        if checkmate or draw:
+            await self.update_finished(game, checkmate, player)
+            await self.update_game_status(game, board.fen())
+
+        await self.move_cb(from_sq, to_sq, player.id, promotion=promotion)
 
     @database_sync_to_async
     def get_game(self, game_id):
@@ -169,11 +163,6 @@ class ChessConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def update_game_status(self, game, board_state):
         game.board_state = board_state
-        game.save()
-
-    @database_sync_to_async
-    def update_active(self, game):
-        game.status = ChessGame.ACTIVE
         game.save()
 
     @database_sync_to_async
