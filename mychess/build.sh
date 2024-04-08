@@ -1,5 +1,5 @@
 #!/bin/bash
-export DJANGO_SUPERUSER_EMAIL='alumnodb@alumnodb.com'
+export DJANGO_SUPERUSER_EMAIL='admin@myproject.com''alumnodb@alumnodb.com'
 export DJANGO_SUPERUSER_USERNAME='alumnodb'
 export DJANGO_SUPERUSER_PASSWORD='alumnodb'
 python3.11 manage.py shell -c "from models.models import Player; Player.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').delete()"
