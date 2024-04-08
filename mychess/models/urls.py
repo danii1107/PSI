@@ -1,3 +1,8 @@
+"""
+Modulo que contiene las rutas de la aplicacion.
+@autor: Enrique Gómez Fernández
+"""
+
 from django.urls import path
 from models.api import MyTokenCreateView, ChessGameViewSet
 
