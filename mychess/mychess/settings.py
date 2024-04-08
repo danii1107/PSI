@@ -97,7 +97,7 @@ TEMPLATES = [
     },
 ]
 
-#WSGI_APPLICATION = 'mychess.wsgi.application'
+# WSGI_APPLICATION = 'mychess.wsgi.application'
 ASGI_APPLICATION = 'mychess.asgi.application'
 
 
@@ -149,30 +149,29 @@ else:
     }
 
 if TESTING:
-    db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
+    db_from_env = dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600
+    )
 else:
-    db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
+    db_from_env = dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600
+    )
 DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.' + validator}
+    for validator in [
+        'UserAttributeSimilarityValidator',
+        'MinimumLengthValidator',
+        'CommonPasswordValidator',
+        'NumericPasswordValidator'
+    ]
 ]
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -184,7 +183,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-AUTH_USER_MODEL='models.Player'
+AUTH_USER_MODEL = 'models.Player'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

@@ -7,11 +7,13 @@ from models.models import ChessGame
 from rest_framework.authtoken.models import Token
 
 
-
 class ChessGameViewSetTest(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = get_user_model().objects.create_user(username='testuser', password='12345')
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            password='12345'
+        )
         self.game = ChessGame.objects.create(
             status=ChessGame.ACTIVE,
             board_state='initial_state',

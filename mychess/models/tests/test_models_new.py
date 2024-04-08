@@ -4,6 +4,7 @@ from models.models import Player, ChessGame, ChessMove
 
 User = get_user_model()
 
+
 class ChessMoveModelTest(TestCase):
     def setUp(self):
         self.player1 = Player.objects.create(username='player1', rating=1500)
@@ -37,14 +38,14 @@ class ChessMoveModelTest(TestCase):
         self.game.board_state = fen
         self.game.save()
 
-        move = ChessMove.objects.create(
+        ChessMove.objects.create(
             game=self.game,
             player=self.player1,
             move_from='g1',
             move_to='g8'
         )
 
-        self.assertEqual(self.game.status,ChessGame.FINISHED)
+        self.assertEqual(self.game.status, ChessGame.FINISHED)
 
         self.assertEqual(self.game.winner, self.player1)
 
@@ -52,16 +53,16 @@ class ChessMoveModelTest(TestCase):
         fen = "8/8/8/8/8/5k2/4K3/8 w - - 0 1"
         self.game.board_state = fen
         self.game.save()
-        move = ChessMove.objects.create(
+        ChessMove.objects.create(
             game=self.game,
             player=self.player1,
             move_from='e2',
             move_to='e1'
         )
 
-        self.assertEqual(self.game.status,ChessGame.FINISHED)
+        self.assertEqual(self.game.status, ChessGame.FINISHED)
 
-        self.assertEqual(self.game.winner,None)
+        self.assertEqual(self.game.winner, None)
 
     def test_continue(self):
         self.game.board_state = "8/8/8/8/8/4k3/8/4K2R w - - 0 1"
@@ -74,6 +75,4 @@ class ChessMoveModelTest(TestCase):
         )
         move.save()
 
-        self.assertEqual(self.game.status,ChessGame.ACTIVE)
-        
-
+        self.assertEqual(self.game.status, ChessGame.ACTIVE)

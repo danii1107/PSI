@@ -13,6 +13,7 @@ URL = '/api/v1/games/'
 
 User = get_user_model()
 
+
 class ChessGameViewSetTest(TestCase):
     def setUp(self):
         ChessGame.objects.all().delete()
@@ -21,8 +22,6 @@ class ChessGameViewSetTest(TestCase):
             username='user1', password='testpassword')
         self.user2 = User.objects.create_user(
             username='user2', password='testpassword')
-
-        
 
     def test_list(self):
         self.client.force_authenticate(user=self.user1)
