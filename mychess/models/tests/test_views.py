@@ -24,6 +24,7 @@ class ChessGameViewSetTest(TestCase):
 
     def test_list(self):
         self.client.force_authenticate(user=self.user)
-        url = reverse('mychess_template', kwargs={'gameID': self.game.id, 'token': self.token.key})
+        url = reverse('mychess_template', kwargs={'gameID': self.game.id})
+        url = url + '?' + self.token.key
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
