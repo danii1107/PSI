@@ -40,10 +40,10 @@ class ChessGameApiTest1(TestCase):
         self.assertEqual(ChessGame.objects.count(), 1)
         chessgame = ChessGame.objects.first()
         result = (chessgame.whitePlayer == self.user1) or (
-            chessgame.blackPlayer == self.user1) 
+            chessgame.blackPlayer == self.user1)
         self.assertTrue(result)
         if (chessgame.whitePlayer == self.user1):
-            while(1):
+            while (1):
                 ChessGame.objects.all().delete()
                 self.client.force_authenticate(user=self.user1)
                 response = self.client.post(URL, {})
@@ -55,7 +55,7 @@ class ChessGameApiTest1(TestCase):
                     self.assertTrue(result)
                     break
         else:
-            while(1):
+            while (1):
                 ChessGame.objects.all().delete()
                 self.client.force_authenticate(user=self.user1)
                 response = self.client.post(URL, {})
@@ -66,8 +66,6 @@ class ChessGameApiTest1(TestCase):
                     result = (chessgame.whitePlayer == self.user1)
                     self.assertTrue(result)
                     break
-
-
 
     def test_list(self):
         self.client.force_authenticate(user=self.user1)
@@ -181,7 +179,7 @@ class ChessRoutingTests(ChannelsLiveServerTestCase):
 
         self.game = ChessGame.objects.create(
             whitePlayer=self.white_user)
-        self.game.save() 
+        self.game.save()
 
     async def test_chess_consumer_connection(self):
         gameID = self.game.id
@@ -193,8 +191,6 @@ class ChessRoutingTests(ChannelsLiveServerTestCase):
         self.assertTrue(connected)
 
         await communicator.disconnect()
-
-
 
 
 class ChessGameSerializerTest(TestCase):
@@ -229,7 +225,6 @@ class ChessGameSerializerTest(TestCase):
             serialized_data['whitePlayer'],
             self.game.whitePlayer.id
         )
-
 
 
 class ChessGameViewSetTest(TestCase):
