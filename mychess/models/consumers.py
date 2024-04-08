@@ -95,7 +95,7 @@ class ChessConsumer(AsyncWebsocketConsumer):
                     }
                 }
             )
-        except Exception as e:
+        except Exception:
             pass
 
     async def handle_move(self, data):
@@ -147,7 +147,7 @@ class ChessConsumer(AsyncWebsocketConsumer):
                 await self.update_game_status(game, board.fen())
 
             await self.move_cb(from_sq, to_sq, player.id, promotion=promotion)
-        except ValueError as e:
+        except ValueError:
             await self.move_cb(from_sq, to_sq, player.id,
                                promotion=promotion, error=True)
 
