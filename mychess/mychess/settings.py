@@ -28,7 +28,7 @@ load_dotenv(dotenv_file)
 if 'RENDER' in os.environ:
     SECRET_KEY = os.getenv('SECRET_KEY')
 else:
-    SECRET_KEY = os.getenv('SECRET_KEY', default='your secret key')
+    SECRET_KEY = os.getenv('SECRET_KEY', default='your_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if 'DEBUG' in os.environ:
@@ -113,8 +113,14 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASE_URL = ''
+DATABASES = {}
 
-if 'TESTING':
+if 'TESTING' in os.environ:
+    TESTING = os.getenv('TESTING', 'false').lower() in ['true', 't', '1']
+else:
+    TESTING = False
+
+if TESTING:
     DATABASE_URL = os.environ.get('LOCALPOSTGRES')
     DATABASES = {
         'default': {
@@ -127,7 +133,7 @@ if 'TESTING':
         }
     }
 else:
-    DATABASE_URL = os.environ.get('DATABASE_URL')
+    DATABASE_URL = os.environ.get('PGDATABASE_URL')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -142,10 +148,10 @@ else:
         }
     }
 
-if 'TESTING' in os.environ:
-    db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500)
+if TESTING:
+    db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
 else:
-    db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500)
+    db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
 DATABASES['default'].update(db_from_env)
 
 # Password validation
