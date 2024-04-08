@@ -1,6 +1,6 @@
 # play scholar check as white
 import asyncio
-from mychess.models.tests.Consumer_scripts.consumer_main import _main, _init
+from .consumer_main import _main, _init
 
 
 moves = [  # from to promoted_piece

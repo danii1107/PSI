@@ -60,9 +60,9 @@ class ChessConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        # Comprueba si el jugador ya esta en la partida
+        # Comprueba si el jugador puede unirse al juego
         cond = await self.verify_game(self.gameID, token_key)
-        if cond is True:
+        if cond is False:
             await self.send(text_data=json.dumps({
                 'type': 'error',
                 'message': f"Invalid game with id {self.gameID}"
@@ -164,6 +164,8 @@ class ChessConsumer(AsyncWebsocketConsumer):
         promotion = data.get('promotion')
         game = await self.get_game(self.gameID)
         token_key = self.scope['query_string'].decode('utf-8')
+        if token_key.endswith('/'):
+            token_key = token_key[:-1]
         player = await self.get_user_from_token(token_key)
 
         if game.status != 'active':
@@ -271,6 +273,8 @@ class ChessConsumer(AsyncWebsocketConsumer):
             @param token_key: Token.
             @return: Usuario.
         """
+        if token_key.endswith('/'):
+            token_key = token_key[:-1]
         try:
             token = Token.objects.get(key=token_key)
             return token.user
@@ -280,21 +284,34 @@ class ChessConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def verify_game(self, gameID, token_key):
         """
-            Metodo que verifica si el jugador ya esta en la partida.
+            Metodo que verifica si el jugador se puede unir.
             @Autor: Daniel Birsan
             @param gameID: ID del juego.
             @param token_key: Token.
-            @return: True si esta en la partida, False si no.
+            @return: True si puede, False si no.
         """
         game = ChessGame.objects.get(id=gameID)
+        if token_key.endswith('/'):
+            token_key = token_key[:-1]
         user = Token.objects.get(key=token_key).user
-        if game.whitePlayer is not None:
+        if game.whitePlayer is not None and game.blackPlayer is not None:
+            if game.whitePlayer.id == user.id or\
+                    game.blackPlayer.id == user.id:
+                return True
+            return False
+        if game.whitePlayer is None and game.blackPlayer is None:
+            game.whitePlayer = user
+            game.save()
+            return True
+        if game.whitePlayer is not None and game.blackPlayer is None:
             if game.whitePlayer.id == user.id:
-                return False
-        if game.blackPlayer is not None:
+                return True
+            return False
+        if game.blackPlayer is not None and game.whitePlayer is None:
             if game.blackPlayer.id == user.id:
-                return False
-        return True
+                return True
+            return False
+        return False
 
     async def game_message(self, event):
         """

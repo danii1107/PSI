@@ -1,3 +1,9 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mychess.settings')
+django.setup()
+
 import json
 import websockets
 from models.models import ChessGame, ChessMove
