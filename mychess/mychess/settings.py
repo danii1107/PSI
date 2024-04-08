@@ -31,6 +31,7 @@ else:
     SECRET_KEY = os.getenv('SECRET_KEY', default='your_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
 if 'DEBUG' in os.environ:
     DEBUG = os.getenv('DEBUG').lower() in ['true', 't', '1']
 else:
