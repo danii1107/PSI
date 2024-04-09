@@ -218,7 +218,42 @@ local_settings.py
 
 db.sqlite3
 
+# Dependencias
+node_modules/
+
+# Configuraciones del IDE y editores
+.idea/
+.vscode/
+*.sublime-workspace
+
+# Archivos de configuración específicos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Directorio de salida de la compilación
+/dist/
+
+# Archivos de logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de entorno
+.env
+.env.local
+.env.[mode].local
+
+# Archivos de caché
+.cache/
+#yarn v2
+.pnp.*
+.yarn/*
+
+# Archivos de compilación temporales
+tmp/
+temp/
+
 venv/
-p1_env/
+p2_env/
 .env
 auxrepo/
