@@ -220,4 +220,5 @@ db.sqlite3
 
 venv/
 p1_env/
+.env
 auxrepo/
