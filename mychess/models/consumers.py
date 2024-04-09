@@ -297,6 +297,7 @@ class ChessConsumer(AsyncWebsocketConsumer):
         if game.whitePlayer is not None and game.blackPlayer is not None:
             if game.whitePlayer.id == user.id or\
                     game.blackPlayer.id == user.id:
+                self.update_active(game)
                 return True
             return False
         if game.whitePlayer is None and game.blackPlayer is None:
@@ -305,13 +306,25 @@ class ChessConsumer(AsyncWebsocketConsumer):
             return True
         if game.whitePlayer is not None and game.blackPlayer is None:
             if game.whitePlayer.id == user.id:
+                self.update_active(game)
                 return True
             return False
         if game.blackPlayer is not None and game.whitePlayer is None:
             if game.blackPlayer.id == user.id:
+                self.update_active(game)
                 return True
             return False
         return False
+
+    def update_active(self, game):
+        """
+            Metodo que actualiza el estado del juego a activo.
+            @Autor: Daniel Birsan
+            @param game: Juego.
+        """
+        if game.status == ChessGame.PENDING:
+            game.status = ChessGame.ACTIVE
+            game.save()
 
     async def game_message(self, event):
         """

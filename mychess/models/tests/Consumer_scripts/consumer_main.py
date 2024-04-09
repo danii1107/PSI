@@ -12,6 +12,7 @@ from rest_framework.authtoken.models import Token
 from models.consumers import ChessConsumer
 from django.urls import path
 from channels.routing import URLRouter
+from channels.db import database_sync_to_async
 
 ws_url = "ws://localhost:8000/ws/play/"  # {gameID}/?{token_key}"
 User = get_user_model()
@@ -140,4 +141,20 @@ async def _main(user, token, game, moves, consumerFirst=True):
             print(f"ERROR ({whiteMove})", message)
             exit(1)
 
-    # TODO: check game is finished
+    await check_finished(game)
+
+
+@database_sync_to_async
+def check_finished(game):
+    """
+        Comprobar asincronamente si la partida ha terminado
+        @Autor: Daniel Birsan
+        @param game: partida a comprobar
+    """
+    game.refresh_from_db()
+    if game.status == ChessGame.FINISHED:
+        print("Game finished")
+        return True
+    else:
+        print("Game not finished")
+        return False

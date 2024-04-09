@@ -31,7 +31,7 @@
 		
 		function sendMessage() {
 			const message = move.value;
-			ws.send(JSON.stringify({type: 'move', message: message}));
+			ws.send(JSON.stringify({type: 'move', from: message[0] + message[1], to: message[2] + message[3], promotion: message[4]}));
 			move.value = '';
 		}
 	</script>
