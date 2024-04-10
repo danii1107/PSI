@@ -1,4 +1,5 @@
 <template>
+	<div class="background-image">
 		<div class="container">
 		<h2>Bienvenido/a</h2>
 		<form v-if="!showRegisterForm" @submit.prevent="login">
@@ -14,6 +15,7 @@
 			<button type="submit">Registrarse</button>
 		</form>
 		</div>
+	</div>
   </template>
   
   <script>
@@ -73,6 +75,15 @@
 	color: blue;
 	cursor: pointer;
   }
+
+.background-image {
+    width: 100vw;
+    height: 100vh;
+    background-image: url('../assets/logn-bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
   
   </style>
   
