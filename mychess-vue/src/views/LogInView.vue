@@ -7,15 +7,9 @@
 			<input type="password" v-model="loginPassword" placeholder="Contraseña" required>
 			<button type="submit">Iniciar Sesión</button>
 		</form>
-		<p v-if="!showRegisterForm">¿No tienes cuenta? <span class="toggle" @click="toggleForm">Regístrate aquí</span></p>
-		<form v-else @submit.prevent="register">
-			<input type="text" v-model="registerFullName" placeholder="Nombre completo" required>
-			<input type="email" v-model="registerEmail" placeholder="Correo electrónico" required>
-			<input type="password" v-model="registerPassword" placeholder="Contraseña" required>
-			<button type="submit">Registrarse</button>
-		</form>
+		<p class="register" v-if="!showRegisterForm">¿No tienes cuenta? <span class="toggle" @click="toggleForm">Regístrate aquí</span></p>
 		</div>
-	</div>
+		</div>
   </template>
   
   <script>
@@ -32,15 +26,10 @@
 	},
 	methods: {
 	  toggleForm() {
-		this.showRegisterForm = !this.showRegisterForm;
+		this.$router.push("/sign-up");
 	  },
 	  login() {
-		// Implement login logic here
 		alert('Login attempted');
-	  },
-	  register() {
-		// Implement register logic here
-		alert('Register attempted');
 	  },
 	},
   };
@@ -72,7 +61,7 @@
 	opacity: 0.8;
   }
   .toggle {
-	color: blue;
+	color: whitesmoke;
 	cursor: pointer;
   }
 
@@ -83,6 +72,9 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
+}
+.register {
+	color: white;
 }
   
   </style>
