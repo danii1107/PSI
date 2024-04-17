@@ -198,7 +198,8 @@ STATIC_URL = os.environ.get('STATIC_URL')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DJOSER = {
-    "USER_ID_FIELD": "username"
+    "USER_ID_FIELD": "username",
+    "SEND_CONFIRMATION_EMAIL": False
 }
 
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
