@@ -42,7 +42,6 @@
   export default {
 	name: 'CreateGameView',
 	components: {
-    	Navbar
   	},
 	data() {
 	  return {

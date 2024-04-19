@@ -32,12 +32,17 @@
 						const personaCreada = await response.json();
 						personas.value = [...personas.value, personaCreada];
 						store.increment();
-						console.log("login success");
 					}
 				} catch (error) {
 					console.error(error);
 				}
 			};
+
+			return {
+				personas,
+				consumeAPI,
+				store,	
+			}
 		}
 	}
 </script>

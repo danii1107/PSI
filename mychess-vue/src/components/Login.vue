@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<form v-if="!showRegisterForm" @submit.prevent="handleLogin">
+		<form @submit.prevent="handleLogin">
 			<input type="username" v-model="persona.username" placeholder="Nombre de usuario" required>
 			<input type="password" v-model="persona.password" placeholder="Contraseña" required>
 			<button type="submit">Iniciar Sesión</button>
