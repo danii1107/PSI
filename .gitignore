@@ -240,6 +240,7 @@ yarn-error.log*
 
 # Archivos de entorno
 .env
+.env*
 .env.local
 .env.[mode].local
 

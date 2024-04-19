@@ -1,28 +1,31 @@
 <template>
 	<div class="container">
-		<form v-if="!showRegisterForm" @submit.prevent="login">
-			<input type="email" v-model="loginEmail" placeholder="Correo electrónico" required>
-			<input type="password" v-model="loginPassword" placeholder="Contraseña" required>
+		<form v-if="!showRegisterForm" @submit.prevent="handleLogin">
+			<input type="username" v-model="persona.username" placeholder="Nombre de usuario" required>
+			<input type="password" v-model="persona.password" placeholder="Contraseña" required>
 			<button type="submit">Iniciar Sesión</button>
 		</form>
-		<p class="register" v-if="!showRegisterForm">¿No tienes cuenta? <span class="toggle" @click="toggleForm">Regístrate aquí</span></p>
 	</div>
 </template>
 
 <script>
 	export default {
+		emits: ['LoginAPI'],
 		data() {
 			return {
-				loginEmail: '',
-				loginPassword: ''
+				persona: {
+					username: "",
+					password: "",
+				},
 			};
 		},
 		methods: {
 			handleLogin() {
-				console.log('Login');
-			},
-			toggleForm() {
-				this.$router.push('/sign-up');
+				this.$emit('LoginAPI', this.persona);
+				this.persona = {
+					username: "",
+					password: "",
+				};
 			}
 		}
 	}
@@ -51,12 +54,5 @@
 	}
 	button:hover {
 		opacity: 0.8;
-	}
-	.toggle {
-		color: whitesmoke;
-		cursor: pointer;
-	}
-	.register {
-		color: white;
 	}
 </style>
