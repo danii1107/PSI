@@ -4,61 +4,36 @@
 		<label>Join or create a game</label>
 	  </header>
   
-	  <nav>
-		<!-- Contenido de la barra de navegación (nav) -->
-	  </nav>
+	  <Navbar />
   
 	  <div class="main-content">
 		<article>
-		  <!-- Contenido principal del artículo (article) -->
 		  <section>
-			<!-- Contenido del artículo (section) -->
+			<CreateGame />
 		  </section>
 		</article>
   
-		<aside>
-		  <!-- Contenido del aside -->
-		  <div>
-			<label for="gameType">Select game type:</label>
-			<form @submit.prevent="submitForm">
-			  <select id="gameType" v-model="selectedGameType">
-				<option value="any">Join any game</option>
-				<option value="specific">Join specific game</option>
-			  </select>
-			  <input v-if="selectedGameType === 'specific'" type="text" v-model="gameID" placeholder="Enter game ID">
-			  <button type="submit">Join Game</button>
-			</form>
-		  </div>
+		<aside>	
+          <img src="../assets/REINA.jpg" alt="Reina" class="section-image">
 		</aside>
 	  </div>
   
 	  <footer>
-		<!-- Contenido del pie de página (footer) -->
+
 	  </footer>
 	</div>
   </template>
   
   <script>
+  import Navbar from '../components/Navbar.vue';
+  import CreateGame from '../components/CreateGame.vue';
+  
   export default {
-	name: 'CreateGameView',
 	components: {
-  	},
-	data() {
-	  return {
-		selectedGameType: 'any',
-		gameID: ''
-	  };
-	},
-	methods: {
-	  submitForm() {
-		if (this.selectedGameType === 'any') {
-		  console.log('Joining any game');
-		} else {
-		  console.log('Joining specific game with ID:', this.gameID);
-		}
-	  }
+	  CreateGame,
+	  Navbar
 	}
-  }
+  };
   </script>
   
   <style scoped>
@@ -71,19 +46,24 @@
   .main-content {
 	display: flex;
 	justify-content: space-between;
-	width: 80%; /* ajusta el ancho del contenido principal */
+	width: 80%; 
   }
   
   main-content > article {
-	width: 50%;
+	width: 70%;
 	align-items: center;
   }
   
   main-content > aside {
-	width: 50%; /* el aside ocupará la mitad del espacio disponible */
+	width: 100%;
 	align-items: center;
+	justify-content: center;
+
   }
   
-  /* Estilos específicos del componente van aquí */
+  .section-image {
+  max-width: 100%;
+  max-height: 100%;
+}
   </style>
   
