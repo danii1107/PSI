@@ -39,7 +39,7 @@
   
 <style scoped>
   .container {
-		margin-right: 20px;
+		margin-left: 20px;
 		width: 50%;
 		padding: 20px;
 		text-align: center;

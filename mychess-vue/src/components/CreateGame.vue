@@ -13,23 +13,26 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      selectedGameType: 'any',
-      gameID: ''
-    };
-  },
-  methods: {
-    submitForm() {
-      if (this.selectedGameType === 'any') {
-        console.log('Joining any game');
-      } else {
-        console.log('Joining specific game with ID:', this.gameID);
+  export default {
+    emits: ["newGame", "joinGame"],
+    data() {
+      return {
+        selectedGameType: 'any',
+        gameID: ''
+      };
+    },
+    methods: {
+      submitForm() {
+        if (this.selectedGameType === 'any') {
+          this.$emit("newGame");
+          console.log('Joining any game');
+        } else {
+          this.$emit("joinGame");
+          console.log('Joining specific game with ID:', this.gameID);
+        }
       }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>
