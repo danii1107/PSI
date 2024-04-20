@@ -2,8 +2,8 @@
   <div class="container">
     <form @submit.prevent="handleSignup">
       <input type="email" v-model="persona.email" placeholder="Correo electrónico" required>
-      <input type="username" v-model="persona.username" placeholder="Nombre de usuario" required>
       <input type="password" v-model="persona.password" placeholder="Contraseña" required>
+      <input type="password" v-model="persona.repeatpwd" placeholder="Repite la contraseña" required>
       <button type="submit">Registrarse</button>
     </form>
   </div>
@@ -18,12 +18,14 @@
 				persona: {
 					username: "",
 					password: "",
+          repeatpwd: "",
           email: "",
 				},
 			};
 		},
 		methods: {
 			handleSignup() {
+        this.persona.username = this.persona.email.split("@")[0];
 				this.$emit('SignupAPI', this.persona);
 				this.persona = {
 					username: "",

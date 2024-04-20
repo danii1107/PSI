@@ -1,7 +1,7 @@
 <template>
 	<div class="container">
 		<form @submit.prevent="handleLogin">
-			<input type="username" v-model="persona.username" placeholder="Nombre de usuario" required>
+			<input type="email" v-model="persona.email" placeholder="Correo electrónico" required>
 			<input type="password" v-model="persona.password" placeholder="Contraseña" required>
 			<button type="submit">Iniciar Sesión</button>
 		</form>
@@ -15,7 +15,7 @@
 		data() {
 			return {
 				persona: {
-					username: "",
+					email: "",
 					password: "",
 				},
 			};
@@ -24,7 +24,7 @@
 			handleLogin() {
 				this.$emit('LoginAPI', this.persona);
 				this.persona = {
-					username: "",
+					email: "",
 					password: "",
 				};
 			}
