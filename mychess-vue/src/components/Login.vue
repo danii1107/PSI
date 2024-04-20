@@ -10,6 +10,7 @@
 
 <script>
 	export default {
+		name: "login",
 		emits: ['LoginAPI'],
 		data() {
 			return {
