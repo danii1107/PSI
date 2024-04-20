@@ -56,7 +56,7 @@
 	.wrapper {
 		position: absolute;
 		top: 50%;
-		left: 25%;
+		left: 50%;
 		transform: translate(-50%, -50%);
 		width: 350px;
 		height: 400px;

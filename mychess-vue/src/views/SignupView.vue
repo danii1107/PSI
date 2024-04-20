@@ -49,15 +49,12 @@
   
 <style scoped>
 	.background-image {
-		display: flex;
-		align-items: center; /* Alinea verticalmente al centro */
-		justify-content: flex-start;
 		width: 100vw;
 		height: 100vh;
 		background-image: url('../assets/sign-up-bg.jpg');
 		background-size: cover;
 		background-repeat: no-repeat;
-		background-position: center;
+		background-position: bottom;
 	} 
 </style>
   
