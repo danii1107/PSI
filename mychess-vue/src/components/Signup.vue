@@ -1,12 +1,24 @@
 <template>
-  <div class="container">
-    <form @submit.prevent="handleSignup">
-      <input type="email" v-model="persona.email" placeholder="Correo electrónico" required>
-      <input type="password" v-model="persona.password" placeholder="Contraseña" required>
-      <input type="password" v-model="persona.repeatpwd" placeholder="Repite la contraseña" required>
-      <button type="submit">Registrarse</button>
-    </form>
-  </div>
+  <div class="wrapper">
+		<h2>Welcome</h2>
+		<form @submit.prevent="handleSignup">
+			<div class="input-field">
+				<input type="email" id="email" placeholder="E-mail" required>
+				<i class='bx bxs-user'></i>
+			</div>
+			<div class="input-field">
+				<input type="password" id="password" placeholder="Password" required>
+				<i class='bx bxs-lock-alt'></i>
+			</div>
+			<div class="input-field">
+				<input type="password" id="password" placeholder="Repeat password" required>
+				<i class='bx bxs-lock-alt'></i>
+			</div>
+			<p></p>
+			<button type="submit" class="login">Sign Up</button>
+			<p class="sign-up">Already have an account? <span class="sign-up" @click="toggleForm">log in</span></p>
+		</form>
+	</div>
 </template>
   
 <script>
@@ -18,48 +30,127 @@
 				persona: {
 					username: "",
 					password: "",
-          repeatpwd: "",
-          email: "",
+					repeatpwd: "",
+					email: "",
 				},
 			};
 		},
 		methods: {
 			handleSignup() {
-        this.persona.username = this.persona.email.split("@")[0];
+        		this.persona.username = this.persona.email.split("@")[0];
 				this.$emit('SignupAPI', this.persona);
 				this.persona = {
 					username: "",
 					password: "",
-          email: "",
+          			email: "",
 				};
+			},
+			toggleForm() {
+				this.$router.push('/log-in');
 			}
 		}
 	}
 </script>
   
 <style scoped>
-  .container {
-		margin-left: 20px;
-		width: 50%;
-		padding: 20px;
+	.wrapper {
+		position: absolute;
+		top: 50%;
+		left: 25%;
+		transform: translate(-50%, -50%);
+		width: 350px;
+		height: 400px;
 		text-align: center;
+		border: 1px solid rgb(241, 241, 241);
+		border-radius: 12px;
+		padding: 10px 20px;
+		background: transparent;
+		backdrop-filter: blur(6px);
+		box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.5);
 	}
-	input, button {
-		width: 80%;
-		padding: 12px 20px;
-		margin: 8px 0;
-		display: inline-block;
-		border: 1px solid #ccc;
-		box-sizing: border-box;
+
+	.wrapper h2 { 
+		font-size: 30px;
+		color: #fffefe;
 	}
-	button {
-		background-color: #6d260a;
-		color: white;
+
+	.input-field {
+		position: relative;
+	}
+
+	.input-field input[type="email"],
+	.input-field input[type="password"] {
+		border-radius: 10px;
+		background: transparent;
+		margin: 15px;
+		border: 2px solid rgb(255, 255, 255);
+		width: 280px;
+		height: 2px;
+		padding: 20px 20px 20px 20px;
+		backdrop-filter: blur(15px);
+		color: rgb(255, 255, 255);
+	}
+
+	.input-field i {
+		position: absolute;
+		top: 50%;
+		right: 10px;
+		transform: translateY(-50%);
+		color: rgb(252, 252, 252);
+	}
+
+	input::placeholder {
+		color: rgb(255, 255, 255);
+	}
+
+	.input-field input[type="email"]:focus::placeholder,
+	.input-field input[type="password"]:focus::placeholder {
+		transform: translateY(-100%);
+		transition: transform 0.2s ease-in-out;
+		font-size: 14px;
+	}
+
+	.input-field input[type="email"]:focus::placeholder,
+	.input-field input[type="password"]:focus::placeholder {
+		transform: translateY(0%);
+		transition: transform 0.2s ease-in-out;
+		font-size: 16px;
+	}
+
+	a.forgot {
+		color: rgb(255, 255, 255, 0.712);
+		text-decoration: none;
+		position: relative;
+	}
+
+	a.forgot:hover {
+		text-decoration: underline;
+		color: #fffffffd;
+	}
+
+	p.sign-up {
+		color: rgb(255, 255, 255, 0.712);
+	}
+
+	a.sign-up {
+		color: rgb(255, 255, 255, 0.712);
+		text-decoration: none;
+	}
+
+	span.sign-up:hover {
+		text-decoration: underline;
+		color: #fffffffd;
+	}
+
+	.wrapper .login {
+		background: #fff;
 		border: none;
+		outline: none;
 		cursor: pointer;
-	}
-	button:hover {
-		opacity: 0.8;
+		font-weight: 600;
+		border-radius: 45px;
+		width: 200px;
+		height: 30px;
 	}
 </style>
   

@@ -14,7 +14,7 @@
 				<p>Forgot password?</p>
 			</a>
 			<button type="submit" class="login">Login</button>
-			<p class="sign-up">Don't have an account? <a href="#" class="sign-up">sign up</a></p>
+			<p class="sign-up">Don't have an account? <span class="sign-up" @click="toggleForm">sign up</span></p>
 		</form>
 	</div>
 </template>
@@ -38,6 +38,9 @@
 					email: "",
 					password: "",
 				};
+			},
+			toggleForm() {
+				this.$router.push('/sign-up');
 			}
 		}
 	}
@@ -128,7 +131,7 @@
 		text-decoration: none;
 	}
 
-	a.sign-up:hover {
+	span.sign-up:hover {
 		text-decoration: underline;
 		color: #fffffffd;
 	}
