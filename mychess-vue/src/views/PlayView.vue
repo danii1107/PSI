@@ -21,12 +21,17 @@
 							<tbody>
 								<template v-for="index in Math.max(moves.white.length, moves.black.length)">
 									<tr>
-									<td>{{ moves.white[index] || '' }}</td>
-									<td>{{ moves.black[index] || '' }}</td>
+									<td>{{ moves.white[index-1] || '' }}</td>
+									<td>{{ moves.black[index-1] || '' }}</td>
 									</tr>
 								</template>
 							</tbody>
 						</table>
+					</div>
+					<div>
+						<div v-if="materialCount !== null">
+						<p>Ventaja de material: {{ materialCount }}</p>
+						</div>
 					</div>
 				</section>
 			</article>
@@ -57,9 +62,11 @@ const emit = defineEmits([
 ]);
 
 let boardApi;
+const materialCount = ref(null);
 
 onMounted(() => {
 	console.log(boardApi?.getBoardPosition());
+
 });
 
 const gameId = 'YourGameId';
@@ -67,54 +74,54 @@ const MAX_MOVES = 5;
 const moves = ref({ white: [], black: [] });
 
 const boardConfig = {
-	fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-	orientation: 'white',
-	turnColor: 'white',
-	coordinates: true,
-	autoCastle: true,
-	viewOnly: false,
-	disableContextMenu: false,
-	addPieceZIndex: false,
-	blockTouchScroll: false,
-	highlight: {
-		lastMove: true,
-		check: true,
-	},
-	animation: {
-		enabled: true,
-		duration: 200,
-	},
-	lastMove: undefined,
-	movable: {
-		free: false,
-		color: 'white',
-		showDests: true,
-		dests: {},
-		events: {},
-		rookCastle: true,
-	},
-	premovable: {
-		enabled: true,
-		showDests: true,
-		castle: true,
-		events: {},
-	},
-	predroppable: {
-		enabled: false,
-		events: {},
-	},
-	draggable: {
-		enabled: true,
-		distance: 3,
-		autoDistance: true,
-		showGhost: true,
-		deleteOnDropOff: false,
-	},
-	selectable: {
-		enabled: true,
-	},
-	events: {},
-	drawable: {
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    orientation: 'white',
+    turnColor: 'white',
+    coordinates: true,
+    autoCastle: true,
+    viewOnly: false,
+    disableContextMenu: false,
+    addPieceZIndex: false,
+    blockTouchScroll: false,
+    highlight: {
+        lastMove: true,
+        check: true,
+    },
+    animation: {
+        enabled: true,
+        duration: 200,
+    },
+    lastMove: undefined,
+    movable: {
+        free: false,
+        color: 'white',
+        showDests: true,
+        dests: {},
+        events: {},
+        rookCastle: true,
+    },
+    premovable: {
+        enabled: true,
+        showDests: true,
+        castle: true,
+        events: {},
+    },
+    predroppable: {
+        enabled: false,
+        events: {},
+    },
+    draggable: {
+        enabled: true,
+        distance: 3,
+        autoDistance: true,
+        showGhost: true,
+        deleteOnDropOff: false,
+    },
+    selectable: {
+        enabled: true,
+    },
+    events: {},
+    drawable: {
 		enabled: true,
 		visible: true,
 		defaultSnapToValidMove: true,
@@ -122,20 +129,22 @@ const boardConfig = {
 		shapes: [],
 		autoShapes: [],
 		brushes: {
-			green: { key: 'g', color: '#15781B', opacity: 1, lineWidth: 10 },
-			red: { key: 'r', color: '#882020', opacity: 1, lineWidth: 10 },
-			blue: { key: 'b', color: '#003088', opacity: 1, lineWidth: 10 },
-			yellow: { key: 'y', color: '#e68f00', opacity: 1, lineWidth: 10 },
-			paleBlue: { key: 'pb', color: '#003088', opacity: 0.4, lineWidth: 15 },
-			paleGreen: { key: 'pg', color: '#15781B', opacity: 0.4, lineWidth: 15 },
-			paleRed: { key: 'pr', color: '#882020', opacity: 0.4, lineWidth: 15 },
-			paleGrey: { key: 'pgr', color: '#4a4a4a', opacity: 0.35, lineWidth: 15 },
+			green: { key: 'g', color: '#2E8B57', opacity: 1, lineWidth: 10 },
+			red: { key: 'r', color: '#B22222', opacity: 1, lineWidth: 10 },
+			blue: { key: 'b', color: '#4169E1', opacity: 1, lineWidth: 10 },
+			yellow: { key: 'y', color: '#FFD700', opacity: 1, lineWidth: 10 },
+			paleBlue: { key: 'pb', color: '#ADD8E6', opacity: 0.5, lineWidth: 15 },
+			paleGreen: { key: 'pg', color: '#90EE90', opacity: 0.5, lineWidth: 15 },
+			paleRed: { key: 'pr', color: '#FFA07A', opacity: 0.5, lineWidth: 15 },
+			paleGrey: { key: 'pgr', color: '#D3D3D3', opacity: 0.5, lineWidth: 15 },
 		},
 	},
+
 };
 
 function handleMove(move) {
 	let moveText = `${move.from} --> ${move.to}`;
+	materialCount.value = boardApi?.getMaterialCount().materialDiff;
 
 	if (move.captured) {
 		moveText += ` (captura ${move.captured})`;
