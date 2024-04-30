@@ -9,9 +9,9 @@
 		<div class="main-content">
 			<article>
 				<section>
-					<div>
+					<div class="table-container">
 						<h2>Movimientos:</h2>
-						<table>
+						<table class="moves-table">
 							<thead>
 								<tr>
 								<th>Jugador Blanco</th>
@@ -191,25 +191,71 @@ function addMove(move, text) {
 
 <style scoped>
 .container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .main-content {
-	display: flex;
-	justify-content: space-between;
-	width: 80%;
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
 }
 
-main-content > article {
-	width: 70%;
-	align-items: center;
+.main-content > article {
+    width: 70%;
+    align-items: center;
 }
 
-main-content > aside {
-	width: 100%;
-	align-items: center;
-	justify-content: center;
+.main-content > aside {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-container {
+    margin-top: 20px;
+}
+
+.moves-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.moves-table th, .moves-table td {
+    padding: 16px;
+    text-align: left;
+}
+
+.moves-table th {
+    background-color: #080836;
+    color: white;
+}
+
+.moves-table tbody tr:nth-child(even) {
+    background-color: #170a61;
+	color: white;
+}
+
+.moves-table tbody tr:nth-child(odd) {
+    background-color: #6533db;
+	color: white;
+}
+
+.moves-table tbody tr:hover {
+    background-color: #6b0808;
+}
+
+.moves-table tbody td {
+    border-bottom: 1px solid #ddd;
+}
+
+.material-advantage {
+    font-weight: bold;
+    color: #4CAF50;
+    margin-top: 10px;
 }
 </style>
