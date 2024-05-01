@@ -64,10 +64,23 @@ const emit = defineEmits([
 let boardApi;
 const materialCount = ref(null);
 
+const url = VITE_DJANGOURL;
+const socket = new WebSocket(url);
+
+socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    if (data.type === 'game') {
+    } else if (data.type === 'move') {
+        boardApi?.value.move(data.move)
+        toAddMove(data.move);
+    }
+};
+
 onMounted(() => {
 	console.log(boardApi?.getBoardPosition());
-
 });
+
+
 
 const gameId = 'YourGameId';
 const MAX_MOVES = 5;
@@ -143,7 +156,24 @@ const boardConfig = {
 };
 
 function handleMove(move) {
-	let moveText = `${move.from} --> ${move.to}`;
+	toAddMove(move);
+
+    let moveMessage = {
+        type: 'move',
+        from: move.from,
+        to: move.to
+    };
+
+    if (move.promotion) {
+        moveMessage.promotion = move.promotion;
+    }
+
+    socket.send(JSON.stringify(moveMessage));
+
+}
+
+function toAddMove(move){
+    let moveText = `${move.from} --> ${move.to}`;
 	materialCount.value = boardApi?.getMaterialCount().materialDiff;
 
 	if (move.captured) {
@@ -152,8 +182,8 @@ function handleMove(move) {
 	addMove(move, moveText)
 }
 
+
 function handleCheckmate(isMated) {
-	//addMove(`Jaque mate: ${isMated}`);
 	emit('checkmate', isMated);
 }
 
@@ -231,17 +261,17 @@ function addMove(move, text) {
 }
 
 .moves-table th {
-    background-color: #080836;
+    background-color: #38383b;
     color: white;
 }
 
 .moves-table tbody tr:nth-child(even) {
-    background-color: #170a61;
+    background-color: #464452;
 	color: white;
 }
 
 .moves-table tbody tr:nth-child(odd) {
-    background-color: #6533db;
+    background-color: #6a6675;
 	color: white;
 }
 

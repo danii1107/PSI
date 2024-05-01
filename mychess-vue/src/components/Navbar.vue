@@ -11,7 +11,6 @@
   export default {
     methods: {
       logout() {
-        // Redirigir al usuario a la página /logout
         this.$router.push('/log-out');
       }
     }
@@ -20,7 +19,7 @@
   
 <style scoped>
 .navbar {
-  background-color: #4d4f57;
+  background-color: #3d3d3c;
   color: white;
   width: 100%;
   padding: 12px 0;
@@ -40,7 +39,7 @@
 .navbar ul li button {
   background: none;
   border: none;
-  color: rgb(204, 27, 204);
+  color: rgb(245, 244, 245);
   cursor: pointer;
 }
 </style>
