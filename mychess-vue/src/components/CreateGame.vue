@@ -15,7 +15,7 @@
 <script>
 export default {
   name: "creategame",
-  emits: ["newGame", "joinGame"],
+  emits: ["newGame"],
   data() {
     return {
       selectedGameType: 'any',
@@ -26,8 +26,6 @@ export default {
     submitForm() {
       if (this.selectedGameType === 'any') {
         this.$emit("newGame");
-      } else {
-        this.$emit("joinGame", this.gameID);
       }
     }
   }
