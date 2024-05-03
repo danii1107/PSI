@@ -3,11 +3,11 @@
 		<h2>Welcome</h2>
 		<form @submit.prevent="handleLogin">
 			<div class="input-field">
-				<input type="email" id="email" placeholder="E-mail" required>
+				<input type="email" id="email" v-model="persona.username" placeholder="E-mail" required>
 				<i class='bx bxs-user'></i>
 			</div>
 			<div class="input-field">
-				<input type="password" id="password" placeholder="Password" required>
+				<input type="password" id="password" v-model="persona.password" placeholder="Password" required>
 				<i class='bx bxs-lock-alt'></i>
 			</div>
 			<a href="#" class="forgot">
@@ -26,18 +26,20 @@
 		data() {
 			return {
 				persona: {
-					email: "",
+					username: "",
 					password: "",
 				},
 			};
 		},
 		methods: {
 			handleLogin() {
+				this.persona.username = this.persona.username.split("@")[0];
 				this.$emit('LoginAPI', this.persona);
 				this.persona = {
-					email: "",
+					username: "",
 					password: "",
 				};
+				this.$router.push('/creategame');
 			},
 			toggleForm() {
 				this.$router.push('/sign-up');

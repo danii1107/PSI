@@ -30,7 +30,6 @@
 				persona: {
 					username: "",
 					password: "",
-					repeatpwd: "",
 					email: "",
 				},
 			};
@@ -40,7 +39,7 @@
         		this.persona.username = this.persona.email.split("@")[0];
 				this.$emit('SignupAPI', this.persona);
 				this.persona = {
-					username: "",
+					repeatpwd: "",
 					password: "",
           			email: "",
 				};

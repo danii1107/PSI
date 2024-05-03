@@ -1,102 +1,58 @@
 <template>
 	<div class="container">
-		<create-game @newGame="consumeAPInew"/>
+	  <create-game @newGame="consumeAPInew" @joinGame="consumeAPIjoin"/>
 	</div>
-  </template>
+</template>
   
 <script>
-	import Navbar from '../components/Navbar.vue';
 	import CreateGame from '../components/CreateGame.vue';
-	import { ref, onMounted } from 'vue';
-	import { useCounterStore } from '../stores/counter';
-
-	const apiURL = import.meta.env.VITE_DJANGOURL
 
 	export default {
 		components: {
-			CreateGame,
-			Navbar
+			CreateGame
 		},
 		setup() {
-			const games = ref([]);
-    		const store = useCounterStore();
+			const apiURL = import.meta.env.VITE_DJANGOURL;
 
 			const consumeAPInew = async () => {
 				try {
-					const response = await fetch(
-						apiURL + '/api/v1/games/', {
-							method: 'POST',
-							body: {},
-							headers: { 'Content-type': 'application/json; charset=UTF-8' },
-						}	
-					);
+					const response = await fetch(`${apiURL}/api/v1/games/`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({})
+					});
 					if (response.ok) {
-						const newGame = await response.json();
-						games.value = [...games.value, newGame];
-						store.increment();
+						const gameData = await response.json();
+						console.log('Game joined or created:', gameData);
+					} else {
+						console.error('Failed to join or create game:', response.status);
 					}
 				} catch (error) {
-					console.error(error);
+					console.error('Error in consumeAPInew:', error);
 				}
 			};
 
-			const consumeAPIjoin = async () => {
+			const consumeAPIjoin = async (gameID) => {
 				try {
-					const response = await fetch(
-						apiURL + '/api/v1/games/', {
-							method: 'POST',
-							body: {},
-							headers: { 'Content-type': 'application/json; charset=UTF-8' },
-						}	
-					);
+					const response = await fetch(`${import.meta.env.VITE_DJANGOURL}/api/v1/games/`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ action: 'join', gameID })
+					});
 					if (response.ok) {
-						const newGame = await response.json();
-						games.value = [...games.value, newGame];
-						store.increment();
+						const joinedGame = await response.json();
+						console.log('Joined game:', joinedGame);
 					}
 				} catch (error) {
-					console.error(error);
+					console.error('Error joining specific game:', error);
 				}
 			};
 
 			return {
-				games,
 				consumeAPInew,
-				consumeAPIjoin,
-				store,	
-			}
+				consumeAPIjoin
+			};
 		}
 	};
 </script>
-  
-  <style scoped>
-  .container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-  }
-  
-  .main-content {
-	display: flex;
-	justify-content: space-between;
-	width: 80%; 
-  }
-  
-  main-content > article {
-	width: 70%;
-	align-items: center;
-  }
-  
-  main-content > aside {
-	width: 100%;
-	align-items: center;
-	justify-content: center;
-
-  }
-  
-  .section-image {
-  max-width: 100%;
-  max-height: 100%;
-}
-  </style>
   
