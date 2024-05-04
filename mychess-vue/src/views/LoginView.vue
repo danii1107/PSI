@@ -18,6 +18,7 @@
 	import Login from '../components/Login.vue';
 	import { ref, onMounted } from 'vue';
 	import { useCounterStore } from '../stores/counter';
+	import { useTokenStore } from '../stores/token'
 
 	const apiURL = import.meta.env.VITE_DJANGOURL;
 
@@ -53,6 +54,7 @@
 			});
 
 			const consumeAPI = async (persona) => {
+				const tokenStore = useTokenStore()
 				try {
 					const response = await fetch(apiURL + '/api/v1/token/login/', {
 						method: 'POST',
@@ -63,6 +65,7 @@
 						const personaCreada = await response.json();
 						personas.value = [...personas.value, personaCreada];
 						store.increment();
+						tokenStore.setToken(personaCreada.auth_token)
 						localStorage.setItem('auth_token', personaCreada.auth_token);
 						localStorage.setItem('user_id', personaCreada.user_id);
 					}
