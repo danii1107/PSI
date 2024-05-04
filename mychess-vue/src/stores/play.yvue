@@ -1,7 +1,7 @@
 <template>
 	<div class="container">
 		<header>
-			<label>Game ID:</label>
+			<label>Game ID: {{ gameId }}</label>
 		</header>
 
 		<Navbar />
@@ -53,11 +53,12 @@
 import { TheChessboard } from 'vue3-chessboard';
 import 'vue3-chessboard/style.css';
 import Navbar from '../components/Navbar.vue';
-import { onBeforeMount, reactive, ref } from 'vue';
+import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { defineEmits } from 'vue';
 import router from '../router'
 import { useTokenStore } from '../stores/token';
+import { useGameStore } from '../stores/gameDataStore';
 
 
 
@@ -69,12 +70,9 @@ const emit = defineEmits([
 	'promotion'
 ]);
 
-let orientationn = null;
-
-const boardConfig = reactive({
+const boardConfig = {
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     coordinates: true,
-    orientation: orientationn,
     autoCastle: true,
     viewOnly: false,
     disableContextMenu: false,
@@ -136,31 +134,61 @@ const boardConfig = reactive({
             paleGrey: { key: 'pgr', color: '#D3D3D3', opacity: 0.5, lineWidth: 15 },
         },
     },
-});
+};
 
 let boardApi;
 const materialCount = ref(null);
+let gameData;
+let gameId;
 let gameOver = false;
 let gameOverMessage = '';
-let gameData;
-let gameDataStr;
 let tokenStore = useTokenStore();
+let gameStore1 = useGameStore();
+let url;
+let socket;
+
 
 onMounted(() => {
-    gameDataStr = localStorage.getItem('game_data');
-    gameData = gameDataStr ? JSON.parse(gameDataStr) : null;  
-    console.log(gameData);
+    gameData = gameStore1.gameData; 
+    gameId = gameData ? gameData.id : '';
+    console.log(gameId);
+    console.log(tokenStore.user_id);
     if (tokenStore.user_id === gameData.whitePlayer) {
-        orientationn = 'white';
+        changeOrientation('whitePlayer');
     } else if (tokenStore.user_id === gameData.blackPlayer) {
-        orientationn = 'black';
+        changeOrientation('blackPlayer');
     }
-
-    boardConfig.orientation = orientationn;
+    url = `${import.meta.env.VITE_DJANGOURL}/ws/play/${gameId}/?${tokenStore.token}`;
+    socket = new WebSocket(url);
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'game') {
+        } else if (data.type === 'move') {
+            boardApi?.value.move(data.move)
+            toAddMove(data.move);
+        }
+    };
 });
+
+
+
+
 
 const MAX_MOVES = 5;
 const moves = ref({ white: [], black: [] });
+
+
+const changeOrientation = (player) => {
+    if (player === 'blackPlayer') {
+        boardConfig.orientation = 'black';
+        boardConfig.turnColor = 'black';
+        boardConfig.movable.color = 'black';
+    } else {
+        boardConfig.orientation = 'white';
+        boardConfig.turnColor = 'white';
+        boardConfig.movable.color = 'white';
+    }
+};
 
 function handleMove(move) {
 	toAddMove(move);
@@ -175,7 +203,7 @@ function handleMove(move) {
         moveMessage.promotion = move.promotion;
     }
 
-    //socket.send(JSON.stringify(moveMessage));
+    socket.send(JSON.stringify(moveMessage));
 
 }
 

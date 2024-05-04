@@ -6,14 +6,12 @@
   
 <script>
 	import CreateGame from '../components/CreateGame.vue';
-	import { useGameStore } from '../stores/gameDataStore';
 
 	export default {
 		components: {
 			CreateGame
 		},
 		setup() {
-			const gameStore = useGameStore();
 			const apiURL = import.meta.env.VITE_DJANGOURL;
 			let gameData = null;
 
@@ -26,7 +24,7 @@
 					});
 					if (response.ok) {
 						gameData = await response.json();
-						gameStore.setGameData(gameData);
+						localStorage.setItem('game_data', JSON.stringify(gameData)); 
 					} else {
 						console.error('Failed to join or create game:', response.status);
 					}
@@ -37,7 +35,7 @@
  
 			return {
 				consumeAPInew,
-				gameStore
+				gameData
 			};
 		}
 	};
