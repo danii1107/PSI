@@ -8,20 +8,24 @@
   </template>
   
   <script>
+import { useTokenStore } from '../stores/token';
+
 
   export default {
 	
 	name: 'LogOutView',
 
+	setup() {
+		const store = useTokenStore();
+	},
 	mounted() {
-	  // Simula la lógica de logout
 	  this.logout();
 	},
 	methods: {
 	  logout() {
-		// Aquí iría la lógica real de logout, como eliminar variables de sesión
+		store.removeToken();
 		setTimeout(() => {
-		  this.$router.push({ name: 'home_page' });
+		  this.$router.push("/log-in");
 		}, 5000);
 	  }
 	}

@@ -41,13 +41,37 @@ const router = createRouter({
   ]
 })
 
-/* router.beforeEach((to, from) => {
+router.beforeEach(async (to, from, next) => {
   const tokenStore = useTokenStore();
-  console.log("UserIsAuthenticated: " + tokenStore.isAuthenticated);
-  console.log("UserIsAuthenticated: " + tokenStore.token);
-  if (!tokenStore.isAuthenticated && to.name !== 'home_page' && to.name !== 'sign_up') {
-    return { name: 'home_page' }
+
+  if (tokenStore.isAuthenticated) {
+    next();
+    return;
   }
-}); */
+
+  if (to.name === 'home_page' || to.name === 'sign_up') {
+    next();
+    return;
+  }
+
+  const waitForAuth = new Promise((resolve) => {
+    const checkAuth = () => {
+      if (tokenStore.isAuthenticated) {
+        resolve(true);
+      } else {
+          setTimeout(checkAuth, 100);
+      }
+    };
+    checkAuth();
+  });
+
+  const isAuth = await waitForAuth.catch(() => false);
+
+  if (isAuth) {
+    next();
+  } else {
+    next({ name: 'home_page' });
+  }
+});
 
 export default router
