@@ -66,10 +66,9 @@
 						const personaCreada = await response.json();
 						personas.value = [...personas.value, personaCreada];
 						store.increment();
-						tokenStore.setToken(personaCreada.auth_token);
+						tokenStore.setToken(personaCreada.auth_token, personaCreada.user_id);
 						console.log(tokenStore.token);
 						console.log(tokenStore.isAuthenticated);
-						localStorage.setItem('user_id', personaCreada.user_id);
 					}
 				} catch (error) {
 					console.error(error);

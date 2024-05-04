@@ -24,6 +24,8 @@
 					});
 					if (response.ok) {
 						gameData = await response.json();
+						localStorage.setItem('game_data', JSON.stringify(gameData)); 
+						console.log(localStorage.getItem('game_data'));
 						console.log('Game joined or created:', gameData);
 					} else {
 						console.error('Failed to join or create game:', response.status);
@@ -32,7 +34,7 @@
 					console.error('Error in consumeAPInew:', error);
 				}
 			};
-
+ 
 			return {
 				consumeAPInew,
 				gameData

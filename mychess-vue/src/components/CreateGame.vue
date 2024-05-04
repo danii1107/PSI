@@ -26,6 +26,7 @@ export default {
     submitForm() {
       if (this.selectedGameType === 'any') {
         this.$emit("newGame");
+        this.$router.push('/play')
       }
     }
   }
