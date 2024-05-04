@@ -36,6 +36,7 @@
 		setup() {
 			const personas = ref([]);
 			const store = useCounterStore();
+			const tokenStore = useTokenStore();
 			const images = ref([image1, image2, image3, image4, image5, image6]);
 			const visibleImages = ref([...images.value]);
 			const transitionDuration = ref(500);
@@ -54,9 +55,9 @@
 			});
 
 			const consumeAPI = async (persona) => {
-				const tokenStore = useTokenStore()
+				
 				try {
-					const response = await fetch(apiURL + '/api/v1/token/login/', {
+					const response = await fetch(apiURL + '/api/v1/mytokenlogin/', {
 						method: 'POST',
 						body: JSON.stringify(persona),
 						headers: { 'Content-type': 'application/json; charset=UTF-8' },
@@ -65,8 +66,9 @@
 						const personaCreada = await response.json();
 						personas.value = [...personas.value, personaCreada];
 						store.increment();
-						tokenStore.setToken(personaCreada.auth_token)
-						localStorage.setItem('auth_token', personaCreada.auth_token);
+						tokenStore.setToken(personaCreada.auth_token);
+						console.log(tokenStore.token);
+						console.log(tokenStore.isAuthenticated);
 						localStorage.setItem('user_id', personaCreada.user_id);
 					}
 				} catch (error) {
@@ -78,6 +80,7 @@
 				personas,
 				consumeAPI,
 				store,
+				tokenStore,
 				visibleImages,
 				transitionStyles
 			};

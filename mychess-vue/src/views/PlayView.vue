@@ -69,8 +69,40 @@ const emit = defineEmits([
 	'promotion'
 ]);
 
+let boardApi;
+const materialCount = ref(null);
+let gameData;
+let gameId;
+let gameOver = false;
+let gameOverMessage = '';
+//const url = import.meta.env.VITE_DJANGOURL;
+//const socket = new WebSocket(url);
+
+/* socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    if (data.type === 'game') {
+    } else if (data.type === 'move') {
+        boardApi?.value.move(data.move)
+        toAddMove(data.move);
+    }
+}; */
+
+onMounted(() => {
+    const creategameDataStore = gameDataStore();
+    gameData = creategameDataStore.gameData;
+    gameId = gameData?.id || '';
+    console.log(gameId);
+});
+
+
+
+const MAX_MOVES = 5;
+const moves = ref({ white: [], black: [] });
+
 const boardConfig = {
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    orientation: 'white',
+    turnColor: 'white',
     coordinates: true,
     autoCastle: true,
     viewOnly: false,
@@ -116,73 +148,24 @@ const boardConfig = {
     },
     events: {},
     drawable: {
-        enabled: true,
-        visible: true,
-        defaultSnapToValidMove: true,
-        eraseOnClick: true,
-        shapes: [],
-        autoShapes: [],
-        brushes: {
-            green: { key: 'g', color: '#2E8B57', opacity: 1, lineWidth: 10 },
-            red: { key: 'r', color: '#B22222', opacity: 1, lineWidth: 10 },
-            blue: { key: 'b', color: '#4169E1', opacity: 1, lineWidth: 10 },
-            yellow: { key: 'y', color: '#FFD700', opacity: 1, lineWidth: 10 },
-            paleBlue: { key: 'pb', color: '#ADD8E6', opacity: 0.5, lineWidth: 15 },
-            paleGreen: { key: 'pg', color: '#90EE90', opacity: 0.5, lineWidth: 15 },
-            paleRed: { key: 'pr', color: '#FFA07A', opacity: 0.5, lineWidth: 15 },
-            paleGrey: { key: 'pgr', color: '#D3D3D3', opacity: 0.5, lineWidth: 15 },
-        },
-    },
-};
+		enabled: true,
+		visible: true,
+		defaultSnapToValidMove: true,
+		eraseOnClick: true,
+		shapes: [],
+		autoShapes: [],
+		brushes: {
+			green: { key: 'g', color: '#2E8B57', opacity: 1, lineWidth: 10 },
+			red: { key: 'r', color: '#B22222', opacity: 1, lineWidth: 10 },
+			blue: { key: 'b', color: '#4169E1', opacity: 1, lineWidth: 10 },
+			yellow: { key: 'y', color: '#FFD700', opacity: 1, lineWidth: 10 },
+			paleBlue: { key: 'pb', color: '#ADD8E6', opacity: 0.5, lineWidth: 15 },
+			paleGreen: { key: 'pg', color: '#90EE90', opacity: 0.5, lineWidth: 15 },
+			paleRed: { key: 'pr', color: '#FFA07A', opacity: 0.5, lineWidth: 15 },
+			paleGrey: { key: 'pgr', color: '#D3D3D3', opacity: 0.5, lineWidth: 15 },
+		},
+	},
 
-let boardApi;
-const materialCount = ref(null);
-let gameData;
-let gameId;
-let gameOver = false;
-let gameOverMessage = '';
-//const url = import.meta.env.VITE_DJANGOURL;
-//const socket = new WebSocket(url);
-
-/* socket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    if (data.type === 'game') {
-    } else if (data.type === 'move') {
-        boardApi?.value.move(data.move)
-        toAddMove(data.move);
-    }
-}; */
-
-onMounted(() => {
-    const creategameDataStore = gameDataStore();
-    gameData = creategameDataStore.gameData;
-    gameId = gameData?.id || '';
-    console.log(gameId);
-    if (localStorage.getItem('user_id') === gameData.whitePlayer) {
-        changeOrientation('whitePlayer');
-    } else if (localStorage.getItem('user_id') === gameData.blackPlayer) {
-        changeOrientation('blackPlayer');
-    }
-});
-
-
-
-
-
-const MAX_MOVES = 5;
-const moves = ref({ white: [], black: [] });
-
-
-const changeOrientation = (player) => {
-    if (player === 'blackPlayer') {
-        boardConfig.orientation = 'black';
-        boardConfig.turnColor = 'black';
-        boardConfig.movable.color = 'black';
-    } else {
-        boardConfig.orientation = 'white';
-        boardConfig.turnColor = 'white';
-        boardConfig.movable.color = 'white';
-    }
 };
 
 function handleMove(move) {

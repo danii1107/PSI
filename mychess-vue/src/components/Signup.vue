@@ -11,7 +11,7 @@
 				<i class='bx bxs-lock-alt'></i>
 			</div>
 			<div class="input-field">
-				<input type="password" id="password" v-model="repeatpwd" placeholder="Repeat password" required>
+				<input type="password" id="password" placeholder="Repeat password" required>
 				<i class='bx bxs-lock-alt'></i>
 			</div>
 			<p></p>
@@ -32,7 +32,6 @@
 					password: "",
 					email: "",
 				},
-				repeatpwd: "",
 			};
 		},
 		methods: {
@@ -44,7 +43,6 @@
 					password: "",
           			email: "",
 				};
-				repeatpwd = "";
 				this.$router.push('/log-in');
 			},
 			toggleForm() {
