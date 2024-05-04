@@ -53,7 +53,7 @@
 import { TheChessboard } from 'vue3-chessboard';
 import 'vue3-chessboard/style.css';
 import Navbar from '../components/Navbar.vue';
-import { ref } from 'vue';
+import { onBeforeMount, reactive, ref } from 'vue';
 import { onMounted } from 'vue';
 import { defineEmits } from 'vue';
 import router from '../router'
@@ -69,9 +69,12 @@ const emit = defineEmits([
 	'promotion'
 ]);
 
-const boardConfig = {
+let orientationn = null;
+
+const boardConfig = reactive({
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     coordinates: true,
+    orientation: orientationn,
     autoCastle: true,
     viewOnly: false,
     disableContextMenu: false,
@@ -133,7 +136,7 @@ const boardConfig = {
             paleGrey: { key: 'pgr', color: '#D3D3D3', opacity: 0.5, lineWidth: 15 },
         },
     },
-};
+});
 
 let boardApi;
 const materialCount = ref(null);
@@ -143,17 +146,6 @@ let gameDataStr;
 let gameOver = false;
 let gameOverMessage = '';
 let tokenStore = useTokenStore();
-const url = `${import.meta.env.VITE_DJANGOURL}/${gameId}/?${tokenStore.token}`;
-const socket = new WebSocket(url);
-
-socket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    if (data.type === 'game') {
-    } else if (data.type === 'move') {
-        boardApi?.value.move(data.move)
-        toAddMove(data.move);
-    }
-};
 
 onMounted(() => {
     gameDataStr = localStorage.getItem('game_data');
@@ -162,31 +154,16 @@ onMounted(() => {
     console.log(gameId);
     console.log(tokenStore.user_id);
     if (tokenStore.user_id === gameData.whitePlayer) {
-        changeOrientation('whitePlayer');
+        orientationn = 'white';
     } else if (tokenStore.user_id === gameData.blackPlayer) {
-        changeOrientation('blackPlayer');
+        orientationn = 'black';
     }
+
+    boardConfig.orientation = orientationn;
 });
-
-
-
-
 
 const MAX_MOVES = 5;
 const moves = ref({ white: [], black: [] });
-
-
-const changeOrientation = (player) => {
-    if (player === 'blackPlayer') {
-        boardConfig.orientation = 'black';
-        boardConfig.turnColor = 'black';
-        boardConfig.movable.color = 'black';
-    } else {
-        boardConfig.orientation = 'white';
-        boardConfig.turnColor = 'white';
-        boardConfig.movable.color = 'white';
-    }
-};
 
 function handleMove(move) {
 	toAddMove(move);
