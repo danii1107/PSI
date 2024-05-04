@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { defineEmits, onMounted, reactive, ref } from 'vue';
+import { defineEmits, onBeforeMount, reactive, ref } from 'vue';
 import { useTokenStore } from '../stores/token';
 import { TheChessboard } from 'vue3-chessboard';
 import 'vue3-chessboard/style.css';
@@ -142,12 +142,18 @@ let gameDataStr;
 const tokenStore = useTokenStore();
 let url;
 let socket;
+let socketcolor;
 
-onMounted(() => {
+onBeforeMount(() => {
     gameDataStr = localStorage.getItem('game_data');
     gameData = gameDataStr ? JSON.parse(gameDataStr) : null;  
     console.log(gameData);  
     boardConfig.orientation = tokenStore.user_id === gameData.whitePlayer ? 'white' : 'black';
+    if(gameData.whitePlayer === tokenStore.user_id){
+        socketcolor = 'black';
+    }else{
+        socketcolor = 'white';
+    }
     url = `${import.meta.env.VITE_DJANGOURL}/ws/play/${gameData.id}/?${tokenStore.token}`;
     socket = new WebSocket(url);
     socket.onmessage = handlesocket;
@@ -158,11 +164,12 @@ const moves = ref({ white: [], black: [] });
 
 function handlesocket(e)
 {
+    console.log(e.data);
     const data = JSON.parse(e.data);
     if (data.type === 'game') {
     } else if (data.type === 'move') {
-        boardApi?.value.move(data.move)
-        toAddMove(data.move);
+        boardApi?.move(data.from + data.to);
+        toAddMove(data.from + data.to);
     }
 };
 
@@ -172,7 +179,8 @@ function handleMove(move) {
     let moveMessage = {
         type: 'move',
         from: move.from,
-        to: move.to
+        to: move.to,
+        promotion: ''
     };
 
     if (move.promotion) {
@@ -230,12 +238,14 @@ function addMove(move, text) {
 	color = move.color;
   }
 
-  const movesByColor = moves.value[color];
+  const movesByColor = moves.value[socketcolor];
   if (movesByColor.length >= MAX_MOVES) {
     movesByColor.shift();
   }
   movesByColor.push(text);
 }
+
+
 </script>
 
 <style scoped>
