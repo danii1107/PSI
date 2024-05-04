@@ -145,6 +145,8 @@ let gameOverMessage = '';
 let gameData;
 let gameDataStr;
 let tokenStore = useTokenStore();
+let url;
+let socket;
 
 onMounted(() => {
     gameDataStr = localStorage.getItem('game_data');
@@ -157,6 +159,17 @@ onMounted(() => {
     }
 
     boardConfig.orientation = orientationn;
+
+    url = `${import.meta.env.VITE_DJANGOURL}/ws/play/${gameData.id}/?${tokenStore.token}`;
+    socket = new WebSocket(url);
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'game') {
+        } else if (data.type === 'move') {
+            boardApi?.value.move(data.move)
+            toAddMove(data.move);
+        }
+    };
 });
 
 const MAX_MOVES = 5;
@@ -175,7 +188,7 @@ function handleMove(move) {
         moveMessage.promotion = move.promotion;
     }
 
-    //socket.send(JSON.stringify(moveMessage));
+    socket.send(JSON.stringify(moveMessage));
 
 }
 
