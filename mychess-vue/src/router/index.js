@@ -40,7 +40,7 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from) => {
+/* router.beforeEach((to, from) => {
   if (!UserIsAuthenticated() && to.name !== 'home_page' && to.name !== 'sign_up') {
     return { name: 'home_page' }
   }
@@ -48,6 +48,6 @@ router.beforeEach((to, from) => {
 
 function UserIsAuthenticated() {
   return localStorage.getItem('auth_token') !== null;
-}
+} */
 
 export default router

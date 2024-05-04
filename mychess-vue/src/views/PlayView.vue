@@ -33,6 +33,10 @@
 						<p>Ventaja de material: {{ materialCount }}</p>
 						</div>
 					</div>
+                    <div v-if="gameOver">
+						<p>{{ gameOverMessage }}</p>
+						<button @click="restartGame">Jugar de nuevo</button>
+					</div>
 				</section>
 			</article>
 
@@ -52,6 +56,10 @@ import Navbar from '../components/Navbar.vue';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { defineEmits } from 'vue';
+import { gameDataStore } from '../stores/gameDataStore';
+import router from '../router'
+
+
 
 const emit = defineEmits([
 	'checkmate',
@@ -63,26 +71,31 @@ const emit = defineEmits([
 
 let boardApi;
 const materialCount = ref(null);
+let gameData;
+let gameId;
+let gameOver = false;
+let gameOverMessage = '';
+//const url = import.meta.env.VITE_DJANGOURL;
+//const socket = new WebSocket(url);
 
-const url = VITE_DJANGOURL;
-const socket = new WebSocket(url);
-
-socket.onmessage = function(e) {
+/* socket.onmessage = function(e) {
     const data = JSON.parse(e.data);
     if (data.type === 'game') {
     } else if (data.type === 'move') {
         boardApi?.value.move(data.move)
         toAddMove(data.move);
     }
-};
+}; */
 
 onMounted(() => {
-	console.log(boardApi?.getBoardPosition());
+    const creategameDataStore = gameDataStore();
+    gameData = creategameDataStore.gameData;
+    gameId = gameData?.id || '';
+    console.log(gameId);
 });
 
 
 
-const gameId = 'YourGameId';
 const MAX_MOVES = 5;
 const moves = ref({ white: [], black: [] });
 
@@ -168,7 +181,7 @@ function handleMove(move) {
         moveMessage.promotion = move.promotion;
     }
 
-    socket.send(JSON.stringify(moveMessage));
+    //socket.send(JSON.stringify(moveMessage));
 
 }
 
@@ -184,20 +197,28 @@ function toAddMove(move){
 
 
 function handleCheckmate(isMated) {
-	emit('checkmate', isMated);
+	gameOver = true;
+	gameOverMessage = isMated ? '¡Jaque mate! El juego ha terminado.' : 'El juego ha terminado por jaque mate.';
 }
 
 function handleDraw() {
-	emit('draw');
+	gameOver = true;
+	gameOverMessage = '¡El juego ha terminado en empate!';
 }
 
 function handleStalemate() {
-	emit('stalemate');
+	gameOver = true;
+	gameOverMessage = '¡El juego ha terminado en ahogado!';
 }
 
 function handlePromotion(promotion) {
 	let moveText = `Promoción: ${promotion.sanMove} (${promotion.promotedTo})`;
 	addMove(promotion, moveText);
+}
+
+function restartGame() {
+    //HAY QUE BORRAR EL ID DEL STORE
+    router.push('/creategame');
 }
 
 
@@ -276,7 +297,7 @@ function addMove(move, text) {
 }
 
 .moves-table tbody tr:hover {
-    background-color: #6b0808;
+    background-color: #757577;
 }
 
 .moves-table tbody td {
