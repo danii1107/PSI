@@ -1,13 +1,16 @@
 import { defineStore } from 'pinia';
 
-export const gameDataStore = defineStore({
-  id: 'gameData',
+export const useGameStore = defineStore("games", {
   state: () => ({
-    gameData: null
+    whitePlayer: "",
+    blackPlayer: "",
+    id: "",
   }),
   actions: {
     setGameData(data) {
-      this.gameData = data;
+      this.whitePlayer = data.whitePlayer;
+      this.blackPlayer = data.blackPlayer;
+      this.id = data.id;
     }
   }
 });

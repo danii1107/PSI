@@ -1,7 +1,7 @@
 <template>
 	<div class="container">
 		<header>
-			<label>Game ID: {{ gameId }}</label>
+			<label>Game ID:</label>
 		</header>
 
 		<Navbar />
@@ -58,6 +58,7 @@ import { onMounted } from 'vue';
 import { defineEmits } from 'vue';
 import router from '../router'
 import { useTokenStore } from '../stores/token';
+import { useGameStore } from '../stores/gameDataStore';
 
 
 
@@ -140,22 +141,16 @@ const boardConfig = reactive({
 
 let boardApi;
 const materialCount = ref(null);
-let gameData;
-let gameId;
-let gameDataStr;
 let gameOver = false;
 let gameOverMessage = '';
 let tokenStore = useTokenStore();
+let gameStore = useGameStore();
 
 onMounted(() => {
-    gameDataStr = localStorage.getItem('game_data');
-    gameData = gameDataStr ? JSON.parse(gameDataStr) : null;    
-    gameId = gameData ? gameData.id : '';
-    console.log(gameId);
-    console.log(tokenStore.user_id);
-    if (tokenStore.user_id === gameData.whitePlayer) {
+    const gameId = gameStore.id;
+    if (tokenStore.user_id === gameStore.whitePlayer) {
         orientationn = 'white';
-    } else if (tokenStore.user_id === gameData.blackPlayer) {
+    } else if (tokenStore.user_id === gameStore.blackPlayer) {
         orientationn = 'black';
     }
 

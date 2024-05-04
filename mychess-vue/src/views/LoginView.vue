@@ -67,8 +67,6 @@
 						personas.value = [...personas.value, personaCreada];
 						store.increment();
 						tokenStore.setToken(personaCreada.auth_token, personaCreada.user_id);
-						console.log(tokenStore.token);
-						console.log(tokenStore.isAuthenticated);
 					}
 				} catch (error) {
 					console.error(error);
