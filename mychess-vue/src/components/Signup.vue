@@ -3,15 +3,15 @@
 		<h2>Welcome</h2>
 		<form @submit.prevent="handleSignup">
 			<div class="input-field">
-				<input type="email" id="email" placeholder="E-mail" required>
+				<input type="email" id="email" v-model="persona.email" placeholder="E-mail" required>
 				<i class='bx bxs-user'></i>
 			</div>
 			<div class="input-field">
-				<input type="password" id="password" placeholder="Password" required>
+				<input type="password" id="password" v-model="persona.password" placeholder="Password" required>
 				<i class='bx bxs-lock-alt'></i>
 			</div>
 			<div class="input-field">
-				<input type="password" id="password" placeholder="Repeat password" required>
+				<input type="password" id="password" v-model="repeatpwd" placeholder="Repeat password" required>
 				<i class='bx bxs-lock-alt'></i>
 			</div>
 			<p></p>
@@ -32,17 +32,20 @@
 					password: "",
 					email: "",
 				},
+				repeatpwd: "",
 			};
 		},
 		methods: {
 			handleSignup() {
         		this.persona.username = this.persona.email.split("@")[0];
+				console.log(this.persona);
 				this.$emit('SignupAPI', this.persona);
 				this.persona = {
-					repeatpwd: "",
 					password: "",
           			email: "",
 				};
+				repeatpwd = "";
+				this.$router.push('/log-in');
 			},
 			toggleForm() {
 				this.$router.push('/log-in');
