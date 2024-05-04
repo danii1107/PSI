@@ -50,31 +50,27 @@
 </template>
 
 <script setup>
+import { defineEmits, onMounted, reactive, ref } from 'vue';
+import { useTokenStore } from '../stores/token';
 import { TheChessboard } from 'vue3-chessboard';
 import 'vue3-chessboard/style.css';
 import Navbar from '../components/Navbar.vue';
-import { onBeforeMount, reactive, ref } from 'vue';
-import { onMounted } from 'vue';
-import { defineEmits } from 'vue';
-import router from '../router'
-import { useTokenStore } from '../stores/token';
+import router from '../router';
 
-
-
+// Emits definition
 const emit = defineEmits([
-	'checkmate',
-	'draw',
-	'stalemate',
-	'move',
-	'promotion'
+    'checkmate',
+    'draw',
+    'stalemate',
+    'move',
+    'promotion'
 ]);
 
-let orientationn = null;
-
+// Reactive state for the board configuration
 const boardConfig = reactive({
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     coordinates: true,
-    orientation: orientationn,
+    orientation: null, // Will be set onMounted
     autoCastle: true,
     viewOnly: false,
     disableContextMenu: false,
@@ -117,7 +113,6 @@ const boardConfig = reactive({
     selectable: {
         enabled: true,
     },
-    events: {},
     drawable: {
         enabled: true,
         visible: true,
@@ -144,36 +139,32 @@ let gameOver = false;
 let gameOverMessage = '';
 let gameData;
 let gameDataStr;
-let tokenStore = useTokenStore();
+const tokenStore = useTokenStore();
 let url;
 let socket;
 
 onMounted(() => {
     gameDataStr = localStorage.getItem('game_data');
     gameData = gameDataStr ? JSON.parse(gameDataStr) : null;  
-    console.log(gameData);
-    if (tokenStore.user_id === gameData.whitePlayer) {
-        orientationn = 'white';
-    } else if (tokenStore.user_id === gameData.blackPlayer) {
-        orientationn = 'black';
-    }
-
-    boardConfig.orientation = orientationn;
-
+    console.log(gameData);  
+    boardConfig.orientation = tokenStore.user_id === gameData.whitePlayer ? 'white' : 'black';
     url = `${import.meta.env.VITE_DJANGOURL}/ws/play/${gameData.id}/?${tokenStore.token}`;
     socket = new WebSocket(url);
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        if (data.type === 'game') {
-        } else if (data.type === 'move') {
-            boardApi?.value.move(data.move)
-            toAddMove(data.move);
-        }
-    };
+    socket.onmessage = handlesocket;
 });
 
 const MAX_MOVES = 5;
 const moves = ref({ white: [], black: [] });
+
+function handlesocket(e)
+{
+    const data = JSON.parse(e.data);
+    if (data.type === 'game') {
+    } else if (data.type === 'move') {
+        boardApi?.value.move(data.move)
+        toAddMove(data.move);
+    }
+};
 
 function handleMove(move) {
 	toAddMove(move);
