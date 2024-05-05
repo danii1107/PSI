@@ -137,24 +137,19 @@ let boardApi;
 const materialCount = ref(null);
 let gameOver = false;
 let gameOverMessage = '';
-let gameData;
-let gameDataStr;
 const tokenStore = useTokenStore();
 let url;
 let socket;
 let socketcolor;
 
-onBeforeMount(() => {
-    gameDataStr = localStorage.getItem('game_data');
-    gameData = gameDataStr ? JSON.parse(gameDataStr) : null;  
-    console.log(gameData);  
-    boardConfig.orientation = tokenStore.user_id === gameData.whitePlayer ? 'white' : 'black';
-    if(gameData.whitePlayer === tokenStore.user_id){
+onBeforeMount(() => { 
+    boardConfig.orientation = tokenStore.user_id === tokenStore.gameData.whitePlayer ? 'white' : 'black';
+    if(tokenStore.gameData.whitePlayer === tokenStore.user_id){
         socketcolor = 'black';
     }else{
         socketcolor = 'white';
     }
-    url = `${import.meta.env.VITE_DJANGOURL}/ws/play/${gameData.id}/?${tokenStore.token}`;
+    url = `${import.meta.env.VITE_DJANGOURL}/ws/play/${tokenStore.gameData.id}/?${tokenStore.token}`;
     socket = new WebSocket(url);
     socket.onmessage = handlesocket;
 });
