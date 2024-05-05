@@ -1,56 +1,69 @@
 <template>
-  <div class="wrapper">
-		<h2>Welcome</h2>
-		<form @submit.prevent="handleSignup">
-			<div class="input-field">
-				<input type="email" id="email" v-model="persona.email" placeholder="E-mail" required>
-				<i class='bx bxs-user'></i>
-			</div>
-			<div class="input-field">
-				<input type="password" id="password" v-model="persona.password" placeholder="Password" required>
-				<i class='bx bxs-lock-alt'></i>
-			</div>
-			<div class="input-field">
-				<input type="password" id="password" placeholder="Repeat password" required>
-				<i class='bx bxs-lock-alt'></i>
-			</div>
-			<p></p>
-			<button type="submit" class="login">Sign Up</button>
-			<p class="sign-up">Already have an account? <span class="sign-up" @click="toggleForm">log in</span></p>
-		</form>
+	<div class="wrapper">
+	  <h2>Welcome</h2>
+	  <form @submit.prevent="handleSignup">
+		<div class="input-field">
+		  <input type="email" id="email" v-model="persona.email" placeholder="E-mail" required data-cy="username">
+		  <i class='bx bxs-user'></i>
+		</div>
+		<div class="input-field">
+		  <input type="password" id="password" v-model="persona.password" placeholder="Password" required data-cy="password1">
+		  <i class='bx bxs-lock-alt'></i>
+		</div>
+		<div class="input-field">
+		  <input type="password" id="repeat-password" v-model="confirmPassword" placeholder="Repeat password" required data-cy="password2">
+		  <i class='bx bxs-lock-alt'></i>
+		</div>
+		<p class="missmatch" v-if="passwordMismatch" data-cy="error-message">Passwords do not match!</p>
+		<br v-else>
+		<button type="submit" class="login" data-cy="signup-button">Sign Up</button>
+		<p class="sign-up">Already have an account? <span class="sign-up" @click="toggleForm">log in</span></p>
+	  </form>
 	</div>
-</template>
+  </template>
   
-<script>
+  <script>
   export default {
-    name: "signup",
-		emits: ['SignupAPI'],
-		data() {
-			return {
-				persona: {
-					username: "",
-					password: "",
-					email: "",
-				},
-			};
+	name: "signup",
+	emits: ['SignupAPI'],
+	data() {
+	  return {
+		persona: {
+		  username: "",
+		  password: "",
+		  email: "",
 		},
-		methods: {
-			handleSignup() {
-        		this.persona.username = this.persona.email.split("@")[0];
-				console.log(this.persona);
-				this.$emit('SignupAPI', this.persona);
-				this.persona = {
-					password: "",
-          			email: "",
-				};
-				this.$router.push('/log-in');
-			},
-			toggleForm() {
-				this.$router.push('/log-in');
-			}
+		confirmPassword: "",
+		passwordMismatch: false
+	  };
+	},
+	methods: {
+	  handleSignup() {
+		if (this.persona.password === this.confirmPassword) {
+		  this.passwordMismatch = false;
+		  this.persona.username = this.persona.email;
+		  console.log(this.persona);
+		  this.$emit('SignupAPI', this.persona);
+		  this.resetPersona();
+		  this.$router.push('/log-in');
+		} else {
+		  this.passwordMismatch = true;
 		}
+	  },
+	  resetPersona() {
+		this.persona = {
+		  username: "",
+		  password: "",
+		  email: "",
+		};
+		this.confirmPassword = "";
+	  },
+	  toggleForm() {
+		this.$router.push('/log-in');
+	  }
 	}
-</script>
+  }
+  </script>
   
 <style scoped>
 	.wrapper {
@@ -59,7 +72,7 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		width: 350px;
-		height: 400px;
+		height: 425px;
 		text-align: center;
 		border: 1px solid rgb(241, 241, 241);
 		border-radius: 12px;
@@ -151,6 +164,10 @@
 		border-radius: 45px;
 		width: 200px;
 		height: 30px;
+	}
+
+	.missmatch {
+		color: white;
 	}
 </style>
   

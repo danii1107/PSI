@@ -3,21 +3,21 @@
 		<h2>Welcome</h2>
 		<form @submit.prevent="handleLogin">
 			<div class="input-field">
-				<input type="email" id="email" v-model="persona.username" placeholder="E-mail" required>
+				<input type="email" id="email" v-model="persona.username" placeholder="E-mail" required data-cy="username">
 				<i class='bx bxs-user'></i>
 			</div>
 			<div class="input-field">
-				<input type="password" id="password" v-model="persona.password" placeholder="Password" required>
+				<input type="password" id="password" v-model="persona.password" placeholder="Password" required data-cy="password">
 				<i class='bx bxs-lock-alt'></i>
 			</div>
-			<a href="#" class="forgot">
-				<p>Forgot password?</p>
-			</a>
-			<button type="submit" class="login">Login</button>
+			<p data-cy="error-message" class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
+			<br v-else>
+			<button type="submit" class="login" data-cy="login-button">Login</button>
 			<p class="sign-up">Don't have an account? <span class="sign-up" @click="toggleForm">sign up</span></p>
 		</form>
 	</div>
 </template>
+
 
 <script>
 	export default {
@@ -29,17 +29,19 @@
 					username: "",
 					password: "",
 				},
+				errorMessage: "",
 			};
 		},
 		methods: {
 			handleLogin() {
-				this.persona.username = this.persona.username.split("@")[0];
-				this.$emit('LoginAPI', this.persona);
-				this.persona = {
-					username: "",
-					password: "",
-				};
-				this.$router.push('/creategame');
+				this.errorMessage = "";
+				this.$emit('LoginAPI', this.persona, (success, error) => {
+					if (success) {
+						this.$router.push('/creategame');
+					} else {
+						this.errorMessage = error || "Error: Invalid username or password";
+					}
+				});
 			},
 			toggleForm() {
 				this.$router.push('/sign-up');
@@ -147,6 +149,10 @@
 		border-radius: 45px;
 		width: 200px;
 		height: 30px;
+	}
+
+	.error-message {
+		color:rgb(241, 241, 241);
 	}
 
 </style>

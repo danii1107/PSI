@@ -41,7 +41,7 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from, next) => {
+/* router.beforeEach(async (to, from, next) => {
   const tokenStore = useTokenStore();
 
   if (tokenStore.isAuthenticated) {
@@ -73,5 +73,5 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'home_page' });
   }
 });
-
+ */
 export default router

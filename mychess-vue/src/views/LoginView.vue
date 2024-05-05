@@ -10,7 +10,7 @@
 				<img :src="image" :alt="'Image ' + (index + 4)" />
 			</div>
 		</div>
-		<login @LoginAPI="consumeAPI" />
+		<login @LoginAPI="consumeAPI"/>
 	</div>
 </template>
 
@@ -54,8 +54,7 @@
 				setInterval(moveImages, 3000);
 			});
 
-			const consumeAPI = async (persona) => {
-				
+			const consumeAPI = async (persona, callback) => {
 				try {
 					const response = await fetch(apiURL + '/api/v1/mytokenlogin/', {
 						method: 'POST',
@@ -67,9 +66,14 @@
 						personas.value = [...personas.value, personaCreada];
 						store.increment();
 						tokenStore.setToken(personaCreada.auth_token, personaCreada.user_id);
+						callback(true);
+					} else {
+						const errorData = await response.json();
+						callback(false, errorData.message);
 					}
 				} catch (error) {
 					console.error(error);
+					callback(false, "Network error or server is down");
 				}
 			};
 
