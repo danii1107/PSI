@@ -39,12 +39,16 @@ export default {
         }, 250);
         return;
       }
-      if (this.selectedGameType === 'any') {
-        this.$emit("newGame");
-        this.$router.push('/play');
-      } else if (this.selectedGameType === 'specific' && this.gameID) {
-        this.$emit("newGame", this.gameID);
-        this.$router.push('/play');
+      if (this.selectedGameType === 'game_join_any' || this.selectedGameType === 'any') {
+        this.$emit("newGame", (succes, error) => {
+          if (succes) {
+            this.$router.push('/play');
+          } else {
+            console.error('Failed to join or create game:', error);
+          }
+        });
+      } else if (this.selectedGameType === 'Join specific game (gameID required)' && this.gameID) {
+        this.errorMessage = error || 'Unimplemented feature: Join specific game by gameID';
       } else {
         console.error('Game type selected requires additional information.');
       }
