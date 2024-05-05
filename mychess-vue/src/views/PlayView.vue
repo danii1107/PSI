@@ -167,9 +167,10 @@ function handlesocket(e)
 {
     console.log(e.data);
     const data = JSON.parse(e.data);
-    if (data.type === 'game') {
-        if(data.message.type.split(":")[0] === 'Error'){
-            boardConfig
+    if (data.type === 'error') {
+        if(data.message === "Error: invalid move (game is not active)"){
+            boardConfig.fen = tokenStore.gameData.board_state;
+            console.log(tokenStore.gameData.board_state);
         }
     } else if (data.type === 'move') {
         if(data.promotion != ""){
@@ -229,7 +230,6 @@ function handlePromotion(promotion) {
 }
 
 function restartGame() {
-    //HAY QUE BORRAR EL ID DEL STORE
     router.push('/creategame');
 }
 
