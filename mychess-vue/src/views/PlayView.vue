@@ -41,7 +41,7 @@
 			</article>
 
 			<aside>
-				<TheChessboard :board-config="boardConfig" @board-created="(api) => (boardApi = api)" @draw="handleDraw" @checkmate="handleCheckmate" @stalemate="handleStalemate" @promotion="handlePromotion" @move="handleMove" />
+				<TheChessboard :board-config="boardConfig" :player-color="playerColor" @board-created="(api) => (boardApi = api)" @draw="handleDraw" @checkmate="handleCheckmate" @stalemate="handleStalemate" @promotion="handlePromotion" @move="handleMove" />
 			</aside>
 		</div>
 
@@ -66,9 +66,8 @@ const emit = defineEmits([
     'promotion'
 ]);
 
-// Reactive state for the board configuration
 const boardConfig = reactive({
-    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    fen: null,
     coordinates: true,
     orientation: null, // Will be set onMounted
     autoCastle: true,
@@ -141,13 +140,20 @@ const tokenStore = useTokenStore();
 let url;
 let socket;
 let socketcolor;
+let thiscolor;
+let playerColor;
 
 onBeforeMount(() => { 
     boardConfig.orientation = tokenStore.user_id === tokenStore.gameData.whitePlayer ? 'white' : 'black';
+    boardConfig.fen = tokenStore.gameData.board_state;
     if(tokenStore.gameData.whitePlayer === tokenStore.user_id){
-        socketcolor = 'black';
+        socketcolor = 'b';
+        thiscolor = 'w';
+        playerColor = 'white'
     }else{
-        socketcolor = 'white';
+        socketcolor = 'w';
+        thiscolor = 'b';
+        playerColor = 'black'
     }
     url = `${import.meta.env.VITE_DJANGOURL}/ws/play/${tokenStore.gameData.id}/?${tokenStore.token}`;
     socket = new WebSocket(url);
@@ -162,48 +168,33 @@ function handlesocket(e)
     console.log(e.data);
     const data = JSON.parse(e.data);
     if (data.type === 'game') {
+        if(data.message.type.split(":")[0] === 'Error'){
+            boardConfig
+        }
     } else if (data.type === 'move') {
-        boardApi?.move(data.from + data.to);
-        let move = {
-            from: data.from,
-            to: data.to,
-            promotion: ''
-        };
-        console.log("a")
-
-        move.to = data.to;
-        move.from = data.from;
-        toAddBySocket(move);
+        if(data.promotion != ""){
+            boardApi?.move(data.from + data.to + data.promotion);
+        }else{
+            boardApi?.move(data.from + data.to);
+        }
     }
 };
 
 function handleMove(move) {
 	toAddMove(move);
+    if(move.color === thiscolor){
+        let moveMessage = {
+            type: 'move',
+            from: move.from,
+            to: move.to,
+            promotion: ''
+        };
 
-    let moveMessage = {
-        type: 'move',
-        from: move.from,
-        to: move.to,
-        promotion: ''
-    };
-
-    if (move.promotion) {
-        moveMessage.promotion = move.promotion;
+        if (move.promotion) {
+            moveMessage.promotion = move.promotion;
+        }
+        socket.send(JSON.stringify(moveMessage));
     }
-
-    socket.send(JSON.stringify(moveMessage));
-
-}
-
-function toAddBySocket(move){
-    let moveText = `${move.from} --> ${move.to}`;
-    materialCount.value = boardApi?.getMaterialCount().materialDiff;
-
-    const movesByColor = moves.value[socketcolor];
-    if (movesByColor.length >= MAX_MOVES) {
-        movesByColor.shift();
-    }
-    movesByColor.push(moveText);
 }
 
 function toAddMove(move){
