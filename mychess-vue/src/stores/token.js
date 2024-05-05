@@ -22,5 +22,8 @@ export const useTokenStore = defineStore("tokens",
         setGameData(gameData){
             this.gameData = gameData
         },
+        restoreGameData(){
+            this.gameData = null
+        },
     },
 })

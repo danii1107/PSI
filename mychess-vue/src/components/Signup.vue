@@ -1,30 +1,68 @@
 <template>
-	<div class="wrapper">
-	  <h2>Welcome</h2>
-	  <form @submit.prevent="handleSignup">
-		<div class="input-field">
-		  <input type="email" id="email" v-model="persona.email" placeholder="E-mail" required data-cy="username">
-		  <i class='bx bxs-user'></i>
-		</div>
-		<div class="input-field">
-		  <input type="password" id="password" v-model="persona.password" placeholder="Password" required data-cy="password1">
-		  <i class='bx bxs-lock-alt'></i>
-		</div>
-		<div class="input-field">
-		  <input type="password" id="repeat-password" v-model="confirmPassword" placeholder="Repeat password" required data-cy="password2">
-		  <i class='bx bxs-lock-alt'></i>
-		</div>
-		<p class="missmatch" v-if="passwordMismatch" data-cy="error-message">Passwords do not match!</p>
-		<br v-else>
-		<button type="submit" class="login" data-cy="signup-button">Sign Up</button>
-		<p class="sign-up">Already have an account? <span class="sign-up" @click="toggleForm">log in</span></p>
-	  </form>
-	</div>
-  </template>
+  <div class="wrapper">
+    <h2>Welcome</h2>
+    <form @submit.prevent="handleSignup">
+      <div class="input-field">
+        <input
+          id="email"
+          v-model="persona.email"
+          type="email"
+          placeholder="E-mail"
+          required
+          data-cy="username"
+        >
+        <i class="bx bxs-user" />
+      </div>
+      <div class="input-field">
+        <input
+          id="password"
+          v-model="persona.password"
+          type="password"
+          placeholder="Password"
+          required
+          data-cy="password1"
+        >
+        <i class="bx bxs-lock-alt" />
+      </div>
+      <div class="input-field">
+        <input
+          id="repeat-password"
+          v-model="confirmPassword"
+          type="password"
+          placeholder="Repeat password"
+          required
+          data-cy="password2"
+        >
+        <i class="bx bxs-lock-alt" />
+      </div>
+      <p
+        v-if="passwordMismatch"
+        class="missmatch"
+        data-cy="error-message"
+      >
+        Passwords do not match!
+      </p>
+      <br v-else>
+      <button
+        type="submit"
+        class="login"
+        data-cy="signup-button"
+      >
+        Sign Up
+      </button>
+      <p class="sign-up">
+        Already have an account? <span
+          class="sign-up"
+          @click="toggleForm"
+        >log in</span>
+      </p>
+    </form>
+  </div>
+</template>
   
   <script>
   export default {
-	name: "signup",
+	name: "SignUp",
 	emits: ['SignupAPI'],
 	data() {
 	  return {

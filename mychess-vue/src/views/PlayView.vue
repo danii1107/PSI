@@ -1,52 +1,69 @@
 <template>
-	<div class="container">
-		<header>
-			<label>Game ID:</label>
-		</header>
+  <div class="container">
+    <header>
+      <label>Game ID:</label>
+    </header>
 
-		<Navbar />
+    <NavBar />
 
-		<div class="main-content">
-			<article>
-				<section>
-					<div class="table-container">
-						<h2>Movimientos:</h2>
-						<table class="moves-table">
-							<thead>
-								<tr>
-								<th>Jugador Blanco</th>
-								<th>Jugador Negro</th>
-								</tr>
-							</thead>
-							<tbody>
-								<template v-for="index in Math.max(moves.white.length, moves.black.length)">
-									<tr>
-									<td>{{ moves.white[index-1] || '' }}</td>
-									<td>{{ moves.black[index-1] || '' }}</td>
-									</tr>
-								</template>
-							</tbody>
-						</table>
-					</div>
-					<div>
-						<div v-if="materialCount !== null">
-						<p>Ventaja de material: {{ materialCount }}</p>
-						</div>
-					</div>
-                    <div v-if="gameOver">
-						<p>{{ gameOverMessage }}</p>
-						<button @click="restartGame">Jugar de nuevo</button>
-					</div>
-				</section>
-			</article>
+    <div class="main-content">
+      <article>
+        <section>
+          <div class="table-container">
+            <h2>Movimientos:</h2>
+            <table
+              class="moves-table"
+              data-cy="moveTable"
+            >
+              <thead>
+                <tr>
+                  <th>Jugador Blanco</th>
+                  <th>Jugador Negro</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template
+                  v-for="index in Math.max(moves.white.length, moves.black.length)"
+                  :key="index"
+                >
+                  <tr>
+                    <td>{{ moves.white[index-1] || '' }}</td>
+                    <td>{{ moves.black[index-1] || '' }}</td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div v-if="materialCount !== null">
+              <p>Ventaja de material: {{ materialCount }}</p>
+            </div>
+          </div>
+          <div v-if="gameOver">
+            <p>{{ gameOverMessage }}</p>
+            <button @click="restartGame">
+              Jugar de nuevo
+            </button>
+          </div>
+        </section>
+      </article>
 
-			<aside>
-				<TheChessboard :board-config="boardConfig" :player-color="playerColor" @board-created="(api) => (boardApi = api)" @draw="handleDraw" @checkmate="handleCheckmate" @stalemate="handleStalemate" @promotion="handlePromotion" @move="handleMove" />
-			</aside>
-		</div>
+      <aside>
+        <TheChessboard
+          :board-config="boardConfig"
+          :player-color="playerColor"
+          @board-created="(api) => (boardApi = api)"
+          @draw="handleDraw"
+          @checkmate="handleCheckmate"
+          @stalemate="handleStalemate"
+          @promotion="handlePromotion"
+          @move="handleMove"
+        />
+      </aside>
+    </div>
 
-		<footer></footer>
-	</div>
+    <footer />
+  </div>
 </template>
 
 <script setup>
@@ -54,7 +71,7 @@ import { defineEmits, onBeforeMount, reactive, ref } from 'vue';
 import { useTokenStore } from '../stores/token';
 import { TheChessboard } from 'vue3-chessboard';
 import 'vue3-chessboard/style.css';
-import Navbar from '../components/Navbar.vue';
+import NavBar from '../components/NavBar.vue';
 import router from '../router';
 
 // Emits definition
@@ -75,6 +92,7 @@ const boardConfig = reactive({
     disableContextMenu: false,
     addPieceZIndex: false,
     blockTouchScroll: false,
+    trustAllEvents: true,
     highlight: {
         lastMove: true,
         check: true,
@@ -230,6 +248,7 @@ function handlePromotion(promotion) {
 }
 
 function restartGame() {
+    tokenStore.restoreGameData();
     router.push('/creategame');
 }
 

@@ -1,27 +1,58 @@
 <template>
-	<div class="wrapper">
-		<h2>Welcome</h2>
-		<form @submit.prevent="handleLogin">
-			<div class="input-field">
-				<input type="email" id="email" v-model="persona.username" placeholder="E-mail" required data-cy="username">
-				<i class='bx bxs-user'></i>
-			</div>
-			<div class="input-field">
-				<input type="password" id="password" v-model="persona.password" placeholder="Password" required data-cy="password">
-				<i class='bx bxs-lock-alt'></i>
-			</div>
-			<p data-cy="error-message" class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
-			<br v-else>
-			<button type="submit" class="login" data-cy="login-button">Login</button>
-			<p class="sign-up">Don't have an account? <span class="sign-up" @click="toggleForm">sign up</span></p>
-		</form>
-	</div>
+  <div class="wrapper">
+    <h2>Welcome</h2>
+    <form @submit.prevent="handleLogin">
+      <div class="input-field">
+        <input
+          id="email"
+          v-model="persona.username"
+          type="email"
+          placeholder="E-mail"
+          required
+          data-cy="username"
+        >
+        <i class="bx bxs-user" />
+      </div>
+      <div class="input-field">
+        <input
+          id="password"
+          v-model="persona.password"
+          type="password"
+          placeholder="Password"
+          required
+          data-cy="password"
+        >
+        <i class="bx bxs-lock-alt" />
+      </div>
+      <p
+        v-if="errorMessage"
+        data-cy="error-message"
+        class="error-message"
+      >
+        {{ errorMessage }}
+      </p>
+      <br v-else>
+      <button
+        type="submit"
+        class="login"
+        data-cy="login-button"
+      >
+        Login
+      </button>
+      <p class="sign-up">
+        Don't have an account? <span
+          class="sign-up"
+          @click="toggleForm"
+        >sign up</span>
+      </p>
+    </form>
+  </div>
 </template>
 
 
 <script>
 	export default {
-		name: "login",
+		name: "LogIn",
 		emits: ['LoginAPI'],
 		data() {
 			return {

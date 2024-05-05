@@ -1,11 +1,19 @@
 <template>
-    <nav class="navbar">
-      <ul>
-        <li><router-link to="/">Home</router-link></li>
-        <li><button @click="logout">Log-out</button></li>
-      </ul>
-    </nav>
-  </template>
+  <nav class="navbar">
+    <ul>
+      <li>
+        <router-link to="/">
+          Home
+        </router-link>
+      </li>
+      <li>
+        <button @click="logout">
+          Log-out
+        </button>
+      </li>
+    </ul>
+  </nav>
+</template>
   
   <script>
   export default {

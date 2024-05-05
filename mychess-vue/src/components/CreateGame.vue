@@ -2,23 +2,58 @@
   <div>
     <label for="selectGame">Select game type:</label>
     <form @submit.prevent="submitForm">
-      <select id="selectGame" v-model="selectedGameType" data-cy="selectGame">
-        <option value="game_join_any">Join any game</option>
-        <option value="Join specific game (gameID required)">Join specific game (gameID required)</option>
+      <select
+        id="selectGame"
+        v-model="selectedGameType"
+        data-cy="selectGame"
+      >
+        <option value="game_join_any">
+          Join any game
+        </option>
+        <option value="Join specific game (gameID required)">
+          Join specific game (gameID required)
+        </option>
       </select>
-      <p v-if="selectedGameType === 'Join specific game (gameID required)'" class="gameID" data-cy='gameID'>Enter gameID</p>
-      <input v-if="selectedGameType === 'Join specific game (gameID required)'" type="text" v-model="gameID">
-      <div class="error-message" v-if="errorMessage" data-cy="error-message">{{ errorMessage }}</div>
-      <button type="submit" class="creategame" data-cy="createGame-button">Join Game</button>
+      <p
+        v-if="selectedGameType === 'Join specific game (gameID required)'"
+        class="gameID"
+        data-cy="gameID"
+      >
+        Enter gameID
+      </p>
+      <input
+        v-if="selectedGameType === 'Join specific game (gameID required)'"
+        v-model="gameID"
+        type="text"
+      >
+      <div
+        v-if="errorMessage"
+        class="error-message"
+        data-cy="error-message"
+      >
+        {{ errorMessage }}
+      </div>
+      <button
+        type="submit"
+        class="creategame"
+        data-cy="createGame-button"
+      >
+        Join Game
+      </button>
     </form>
-    <button data-cy="logOutLink" @click="logOut">Log Out</button>
+    <button
+      data-cy="logOutLink"
+      @click="logOut"
+    >
+      Log Out
+    </button>
   </div>
 </template>
 
 <script>
 import { useTokenStore } from '../stores/token';
 export default {
-  name: "creategame",
+  name: "CreateGame",
   emits: ["newGame"],
   data() {
     return {

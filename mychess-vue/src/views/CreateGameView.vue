@@ -1,12 +1,12 @@
 <template>
-	<div class="container">
-	  <create-game @newGame="consumeAPInew"/>
-	</div>
+  <div class="container">
+    <create-game @new-game="consumeAPInew" />
+  </div>
 </template>
   
 <script>
 	import CreateGame from '../components/CreateGame.vue';
-import { useTokenStore } from '../stores/token';
+	import { useTokenStore } from '../stores/token';
 
 	export default {
 		components: {
@@ -32,7 +32,7 @@ import { useTokenStore } from '../stores/token';
 						games = await responseget.json();
 						for (const game of games) {
 							console.log("Checking game:", game);
-							if (game.status !== 'Finished' && (game.whitePlayer === tokenStore.user_id || game.blackPlayer === tokenStore.user_id)) {
+							if (game.status !== 'finished' && (game.whitePlayer === tokenStore.user_id || game.blackPlayer === tokenStore.user_id)) {
 								console.log("Active game found:", game);
 								tokenStore.setGameData(game);
 								callback(true);

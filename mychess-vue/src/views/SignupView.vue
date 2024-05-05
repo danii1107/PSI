@@ -1,7 +1,7 @@
 <template>
-	<div class="background-image">
-		<signup @SignupAPI="consumeAPI" />
-	</div>
+  <div class="background-image">
+    <signup @signup-a-p-i="consumeAPI" />
+  </div>
 </template>
   
 <script>

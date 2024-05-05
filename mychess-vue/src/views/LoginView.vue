@@ -1,17 +1,33 @@
 <template>
-	<div class="background-image">
-		<div class="row">
-			<div class="column" v-for="(image, index) in visibleImages.slice(0, 3)" :key="index" :style="transitionStyles">
-				<img :src="image" :alt="'Image ' + (index + 1)" />
-			</div>
-		</div>
-		<div class="row">
-			<div class="column" v-for="(image, index) in visibleImages.slice(3, 6)" :key="index + 3" :style="transitionStyles">
-				<img :src="image" :alt="'Image ' + (index + 4)" />
-			</div>
-		</div>
-		<login @LoginAPI="consumeAPI"/>
-	</div>
+  <div class="background-image">
+    <div class="row">
+      <div
+        v-for="(image, index) in visibleImages.slice(0, 3)"
+        :key="index"
+        class="column"
+        :style="transitionStyles"
+      >
+        <img
+          :src="image"
+          :alt="'Image ' + (index + 1)"
+        >
+      </div>
+    </div>
+    <div class="row">
+      <div
+        v-for="(image, index) in visibleImages.slice(3, 6)"
+        :key="index + 3"
+        class="column"
+        :style="transitionStyles"
+      >
+        <img
+          :src="image"
+          :alt="'Image ' + (index + 4)"
+        >
+      </div>
+    </div>
+    <login @login-a-p-i="consumeAPI" />
+  </div>
 </template>
 
 <script>

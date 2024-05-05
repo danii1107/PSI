@@ -1,11 +1,14 @@
 <template>
-	<div class="background-image">
-	  <div class="container" data-cy="logoutPage">
-		<h1>Log Out</h1>
-		<p>Has cerrado sesión exitosamente. Serás redirigido a la página de inicio en 5 segundos.</p>
-	  </div>
-	</div>
-  </template>
+  <div class="background-image">
+    <div
+      class="container"
+      data-cy="logoutPage"
+    >
+      <h1>Log Out</h1>
+      <p>Has cerrado sesión exitosamente. Serás redirigido a la página de inicio en 5 segundos.</p>
+    </div>
+  </div>
+</template>
   
   <script>
   import { useTokenStore } from '../stores/token';

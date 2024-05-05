@@ -27,8 +27,8 @@
 // "export PYTHON3=/home/roberto/Docencia/PSI/psi/2023_24/psi2023_24/venv/bin/python\n" +
 // 
 // fill free to modify the path to python3 and manage.py"
-const PYTHON = "/home/dani/Escritorio/PSI/PSI/venv/bin/python"
-const MANAGE = "/home/dani/Escritorio/PSI/PSI/mychess/manage.py"
+const PYTHON = "/home/enrique/p2_env/bin/python"
+const MANAGE = "/home/enrique/PSI/PSI/mychess/manage.py"
 Cypress.Commands.add('delete_game', () => {
     var command = " # fill free to modify the path to python3 and manage.py" +
                 "\n" +
@@ -62,7 +62,7 @@ Cypress.Commands.add('login', (username, password) => {
                 "password = 'sacacorchos'\n" +
                 "email = 'user1@example.com'\n" +
                 "username = email\n" +
-                "email2 = 'user1@example.com'\n" +
+                "email2 = 'user2@example.com'\n" +
                 "\n" +
                 "User = get_user_model()  # get the currently active user model,\n" +
                 "\n" +

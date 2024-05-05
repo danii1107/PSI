@@ -14,6 +14,7 @@ module.exports = defineConfig({
   env: {
     username: "user1@example.com",
     username2: "user2@example.com",
-    password: "sacacorchos"
+    password: "sacacorchos",
+    TEST_BOARD_SIZE_PX: 592
   }
 });
