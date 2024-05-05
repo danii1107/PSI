@@ -169,7 +169,16 @@ function handlesocket(e)
     if (data.type === 'game') {
     } else if (data.type === 'move') {
         boardApi?.move(data.from + data.to);
-        toAddMove(data.from + data.to);
+        let move = {
+            from: data.from,
+            to: data.to,
+            promotion: ''
+        };
+        console.log("a")
+
+        move.to = data.to;
+        move.from = data.from;
+        toAddBySocket(move);
     }
 };
 
@@ -189,6 +198,17 @@ function handleMove(move) {
 
     socket.send(JSON.stringify(moveMessage));
 
+}
+
+function toAddBySocket(move){
+    let moveText = `${move.from} --> ${move.to}`;
+    materialCount.value = boardApi?.getMaterialCount().materialDiff;
+
+    const movesByColor = moves.value[socketcolor];
+    if (movesByColor.length >= MAX_MOVES) {
+        movesByColor.shift();
+    }
+    movesByColor.push(moveText);
 }
 
 function toAddMove(move){
@@ -238,7 +258,7 @@ function addMove(move, text) {
 	color = move.color;
   }
 
-  const movesByColor = moves.value[socketcolor];
+  const movesByColor = moves.value[color];
   if (movesByColor.length >= MAX_MOVES) {
     movesByColor.shift();
   }
