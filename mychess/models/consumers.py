@@ -297,21 +297,25 @@ class ChessConsumer(AsyncWebsocketConsumer):
         if game.whitePlayer is not None and game.blackPlayer is not None:
             if game.whitePlayer.id == user.id or\
                     game.blackPlayer.id == user.id:
+                print (f"\n\n\n\n\n metiendo un jugador donde ya estaoy {game.status} antes de set \n\n\n\n\n")
                 self.update_active(game)
                 return True
             return False
         if game.whitePlayer is None and game.blackPlayer is None:
             game.whitePlayer = user
+            print(f"\n\n\n\n\n metiendo un solo jugador {game.status} \n\n\n\n\n")
             game.save()
             return True
         if game.whitePlayer is not None and game.blackPlayer is None:
             if game.whitePlayer.id == user.id:
-                self.update_active(game)
+                print(f"\n\n\n\n\n metiendo un jugador a otro q ya esta {game.status} antes de set \n\n\n\n\n")
+                print(f"\n\n\n\n\n metiendo un solo jugador a otro q ya esta {game.status} despues de set \n\n\n\n\n")
                 return True
             return False
         if game.blackPlayer is not None and game.whitePlayer is None:
             if game.blackPlayer.id == user.id:
-                self.update_active(game)
+                print(f"\n\n\n\n\n metiendo un jugador a otro q ya esta {game.status} antes de set \n\n\n\n\n")
+                print(f"\n\n\n\n\n metiendo un solo jugador a otro q ya esta {game.status} despues de set \n\n\n\n\n")
                 return True
             return False
         return False

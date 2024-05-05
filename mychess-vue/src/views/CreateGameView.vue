@@ -32,6 +32,7 @@ import { useTokenStore } from '../stores/token';
 					if (response.ok) {
 						gameData = await response.json();
 						tokenStore.setGameData(gameData);
+						console.log(gameData);
 						callback(true); 
 					} else {
 						console.error('Failed to join or create game:', response.status);
