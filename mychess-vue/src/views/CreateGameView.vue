@@ -6,6 +6,7 @@
   
 <script>
 	import CreateGame from '../components/CreateGame.vue';
+import { useTokenStore } from '../stores/token';
 
 	export default {
 		components: {
@@ -13,13 +14,17 @@
 		},
 		setup() {
 			const apiURL = import.meta.env.VITE_DJANGOURL;
+			const tokenStore = useTokenStore();
 			let gameData = null;
 
 			const consumeAPInew = async () => {
 				try {
 					const response = await fetch(`${apiURL}/api/v1/games/`, {
 						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
+						headers: {
+							'Authorization': 'token ' + tokenStore.token, 
+							'Content-Type': 'application/json' 
+						},
 						body: JSON.stringify({})
 					});
 					if (response.ok) {

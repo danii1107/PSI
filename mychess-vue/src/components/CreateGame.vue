@@ -28,27 +28,30 @@ export default {
     };
   },
   methods: {
-  submitForm() {
-    const tokenStore = useTokenStore();
-    if (tokenStore.isAuthenticated) {
-      this.errorMessage = '';
-    } else {
-      this.errorMessage = 'Error: Cannot create game';
-      return;
+    submitForm() {
+      const tokenStore = useTokenStore();
+      if (tokenStore.isAuthenticated) {
+        this.errorMessage = '';
+      } else {
+        this.errorMessage = 'Error: Cannot create game';
+        setTimeout(() => {
+          this.$router.push('/log-in');
+        }, 250);
+        return;
+      }
+      if (this.selectedGameType === 'any') {
+        this.$emit("newGame");
+        this.$router.push('/play');
+      } else if (this.selectedGameType === 'specific' && this.gameID) {
+        this.$emit("newGame", this.gameID);
+        this.$router.push('/play');
+      } else {
+        console.error('Game type selected requires additional information.');
+      }
+    },
+    logOut() {
+      this.$router.push('/log-out');
     }
-    if (this.selectedGameType === 'any') {
-      this.$emit("newGame");
-      this.$router.push('/play');
-    } else if (this.selectedGameType === 'specific' && this.gameID) {
-      this.$emit("newGame", this.gameID);
-      this.$router.push('/play');
-    } else {
-      console.error('Game type selected requires additional information.');
-    }
-  },
-  logOut() {
-    this.$router.push('/log-out');
   }
-}
 };
 </script>
