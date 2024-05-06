@@ -10,6 +10,7 @@ Si lo prefiere, puede ejecutar 'sh build.sh' para crear el superusuario y desple
 ---
 
 - API desplegada en: https://mychess-dbmi.onrender.com
+- App Vue desplegada en: https://mychess-vue-zq5z.onrender.com
 
 La aplicación usa una BBDD en neon-tech si se despliega desde render, de lo contrario, usará la default con Django, al igual que se hizo en las entregas anteriores.
 

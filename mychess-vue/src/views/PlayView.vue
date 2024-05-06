@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <header>
-      <label>Game ID:</label>
+      <p>Game ID:</p>
     </header>
 
     <NavBar />
@@ -44,12 +44,7 @@
             data-cy="winMsg"
           >
             <p>{{ gameOverMessage }}</p>
-            <button
-              data-cy="createGame-button-in-play"
-              @click="restartGame"
-            >
-              PLAY NEW GAME
-            </button>
+            <button data-cy="createGame-button-in-play" @click="restartGame">PLAY NEW GAME</button>
           </div>
         </section>
       </article>
