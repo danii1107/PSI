@@ -76,9 +76,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env.development.local
 .env.test.local
-.env.production.local
 .env.local
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -241,11 +239,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Archivos de entorno
-.env
-.env*
 .env.local
 .env.[mode].local
-
 # Archivos de caché
 .cache/
 #yarn v2
@@ -287,5 +282,6 @@ coverage
 
 venv/
 p2_env/
-.env
+env
 auxrepo/
+cypress/

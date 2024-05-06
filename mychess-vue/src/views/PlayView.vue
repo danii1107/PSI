@@ -39,9 +39,17 @@
               <p>Ventaja de material: {{ materialCount }}</p>
             </div>
           </div>
-          <div v-if="gameOver" data-cy="winMsg">
+          <div
+            v-if="gameOver"
+            data-cy="winMsg"
+          >
             <p>{{ gameOverMessage }}</p>
-            <button @click="restartGame" data-cy="createGame-button-in-play">PLAY NEW GAME</button>
+            <button
+              data-cy="createGame-button-in-play"
+              @click="restartGame"
+            >
+              PLAY NEW GAME
+            </button>
           </div>
         </section>
       </article>
@@ -227,7 +235,7 @@ function toAddMove(move){
 
 function handleCheckmate(isMated) {
 	gameOver = true;
-	gameOverMessage = `${isMated} wins`;
+	gameOverMessage = isMated === 'black' ? 'White Wins' : 'Black Wins';
 }
 
 function handleDraw() {

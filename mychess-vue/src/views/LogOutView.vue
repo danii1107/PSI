@@ -1,10 +1,20 @@
 <template>
-  <div class="background-image" data-cy="logoutPage">
-      <div class="text"><p class="logout">Log Out</p>
-      <p class="log-out-text">Goodbye! Come back soon!</p> 
-      <p class="redirect">You will be redirected to login page in 5 seconds</p>
+  <div
+    class="background-image"
+    data-cy="logoutPage"
+  >
+    <div class="text">
+      <p class="logout">
+        Log Out
+      </p>
+      <p class="log-out-text">
+        Goodbye! Come back soon!
+      </p> 
+      <p class="redirect">
+        You will be redirected to login page in 5 seconds
+      </p>
     </div>
-    </div>
+  </div>
 </template>
   
   <script>
