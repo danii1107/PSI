@@ -1,13 +1,10 @@
 <template>
-  <div class="background-image">
-    <div
-      class="container"
-      data-cy="logoutPage"
-    >
-      <h1>Log Out</h1>
-      <p>Has cerrado sesión exitosamente. Serás redirigido a la página de inicio en 5 segundos.</p>
+  <div class="background-image" data-cy="logoutPage">
+      <div class="text"><p class="logout">Log Out</p>
+      <p class="log-out-text">Goodbye! Come back soon!</p> 
+      <p class="redirect">You will be redirected to login page in 5 seconds</p>
     </div>
-  </div>
+    </div>
 </template>
   
   <script>
@@ -58,15 +55,32 @@
   .background-image {
 	width: 100vw;
 	height: 100vh;
-	background-image: url('../assets/REINA.jpg');
+	background-image: url('../assets/LOGOUT.jpg');
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
+  display: flex;
   }
-  
-  .container {
-	color: white;
-	text-align: center;
+
+  .text {
+    margin-top: 13%;
+    text-align: center;
+    margin-left: 50%;
+  }
+  .logout {
+    font-size: 2rem;
+    font-family: Verdana, Tahoma, sans-serif;
+    color: white;
+  }
+  .log-out-text {
+    font-size: 1.5rem;
+    font-family: Verdana, Tahoma, sans-serif;
+    color: white;
+  }
+  .redirect {
+    font-size: 1rem;
+    font-family: Verdana, Tahoma, sans-serif;
+    color: white;
   }
   </style>
   
