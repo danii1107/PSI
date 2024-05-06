@@ -7,12 +7,8 @@
         v-model="selectedGameType"
         data-cy="selectGame"
       >
-        <option value="game_join_any">
-          Join any game
-        </option>
-        <option value="Join specific game (gameID required)">
-          Join specific game (gameID required)
-        </option>
+        <option value="game_join_any">Join any game</option>
+        <option value="Join specific game (gameID required)">Join specific game (gameID required)</option>
       </select>
       <p
         v-if="selectedGameType === 'Join specific game (gameID required)'"

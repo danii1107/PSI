@@ -39,11 +39,9 @@
               <p>Ventaja de material: {{ materialCount }}</p>
             </div>
           </div>
-          <div v-if="gameOver">
+          <div v-if="gameOver" data-cy="winMsg">
             <p>{{ gameOverMessage }}</p>
-            <button @click="restartGame">
-              Jugar de nuevo
-            </button>
+            <button @click="restartGame" data-cy="createGame-button-in-play">PLAY NEW GAME</button>
           </div>
         </section>
       </article>
@@ -229,17 +227,17 @@ function toAddMove(move){
 
 function handleCheckmate(isMated) {
 	gameOver = true;
-	gameOverMessage = isMated ? '¡Jaque mate! El juego ha terminado.' : 'El juego ha terminado por jaque mate.';
+	gameOverMessage = `${isMated} wins`;
 }
 
 function handleDraw() {
 	gameOver = true;
-	gameOverMessage = '¡El juego ha terminado en empate!';
+	gameOverMessage = 'Draw';
 }
 
 function handleStalemate() {
 	gameOver = true;
-	gameOverMessage = '¡El juego ha terminado en ahogado!';
+	gameOverMessage = 'Stalemate';
 }
 
 function handlePromotion(promotion) {
