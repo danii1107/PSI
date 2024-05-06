@@ -20,13 +20,36 @@
 	setup() {
 	  const router = useRouter();
 	  const store = useTokenStore();
-  
-	  onMounted(() => {
-		store.removeToken();
-		setTimeout(() => {
-		  router.push("/log-in");
-		}, 5000);
-	  });
+    const apiURL = import.meta.env.VITE_DJANGOURL;
+    
+	  
+
+    const logOut = async () => {
+				try {
+					const response = await fetch(`${apiURL}/api/v1/token/logout`, {
+						method: 'POST',
+						headers: {
+							'Authorization': 'token ' + store.token,
+							'Accept': 'application/json',
+							'Content-Type': 'application/json' 
+						},
+					});
+					if (response.ok) {
+            store.removeToken();
+            setTimeout(() => {
+              router.push("/log-in");
+            }, 5000);
+					}else{
+            console.log("a");
+          }
+				} catch (error) {
+					console.error(error);
+				}
+			};
+
+      onMounted(() => {
+        logOut(); 
+      });
 	}
   }
   </script>
