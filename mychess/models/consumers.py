@@ -27,6 +27,7 @@ class ChessConsumer(AsyncWebsocketConsumer):
                     verify_game, game_message, move_message.
     """
     room_group_name = str(0)
+    bool_active = False
 
     async def connect(self):
         """
@@ -70,6 +71,9 @@ class ChessConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
+        # Actualiza el estado del juego a activo
+        if self.bool_active is True:
+            await self.update_active(game)
         # Agrega al jugador al channel y enviar OK
         self.room_group_name = str(self.gameID)
         await self.channel_layer.group_add(
@@ -297,29 +301,24 @@ class ChessConsumer(AsyncWebsocketConsumer):
         if game.whitePlayer is not None and game.blackPlayer is not None:
             if game.whitePlayer.id == user.id or\
                     game.blackPlayer.id == user.id:
-                print (f"\n\n\n\n\n metiendo un jugador donde ya estaoy {game.status} antes de set \n\n\n\n\n")
-                self.update_active(game)
+                self.bool_active = True
                 return True
             return False
         if game.whitePlayer is None and game.blackPlayer is None:
             game.whitePlayer = user
-            print(f"\n\n\n\n\n metiendo un solo jugador {game.status} \n\n\n\n\n")
             game.save()
             return True
         if game.whitePlayer is not None and game.blackPlayer is None:
             if game.whitePlayer.id == user.id:
-                print(f"\n\n\n\n\n metiendo un jugador a otro q ya esta {game.status} antes de set \n\n\n\n\n")
-                print(f"\n\n\n\n\n metiendo un solo jugador a otro q ya esta {game.status} despues de set \n\n\n\n\n")
                 return True
             return False
         if game.blackPlayer is not None and game.whitePlayer is None:
             if game.blackPlayer.id == user.id:
-                print(f"\n\n\n\n\n metiendo un jugador a otro q ya esta {game.status} antes de set \n\n\n\n\n")
-                print(f"\n\n\n\n\n metiendo un solo jugador a otro q ya esta {game.status} despues de set \n\n\n\n\n")
                 return True
             return False
         return False
 
+    @database_sync_to_async
     def update_active(self, game):
         """
             Metodo que actualiza el estado del juego a activo.
